@@ -1,0 +1,1 @@
+ALTER TABLE "defaults" DROP COLUMN "dispatcher";

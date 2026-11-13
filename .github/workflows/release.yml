@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: version
+        uses: TriPSs/conventional-changelog-action@v6
+        with:
+          preset: conventionalcommits
+          output-file: "false"
+          skip-version-file: "true"
+          skip-commit: "true"
+          skip-tag: "true"
+          skip-git-pull: "true"
+          git-push: "false"
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.3"
+      - run: bun install --frozen-lockfile
+      # Adds the notes of the version below the title, in the format of the other documents.
+      - run: |
+          printf '\n## %s - %s\n\n%s\n' "$TAG" "$(date -u +%F)" "$NOTES" > "$RUNNER_TEMP/notes.md"
+          sed -i "/^# Changelog$/r $RUNNER_TEMP/notes.md" src/content/changelog.md
+          bunx oxfmt src/content/changelog.md
+        env:
+          NOTES: ${{ steps.version.outputs.clean_changelog }}
+          TAG: ${{ steps.version.outputs.tag }}
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npm pkg set version="${TAG#v}"
+          git commit -am "chore(release): $TAG"
+          git tag "$TAG"
+          git push --atomic origin HEAD:main "$TAG"
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+
+  # Pushes with GITHUB_TOKEN start no workflow: the release deploys its tag itself.
+  deploy:
+    needs: release
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      ref: ${{ needs.release.outputs.tag }}
+    secrets: inherit

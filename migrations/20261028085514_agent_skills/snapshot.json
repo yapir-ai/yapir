@@ -1,0 +1,37 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "e0a5f60d-9914-4232-aa89-197b45c18a03",
+  "prevIds": ["775f0349-1b0d-4f3d-a6ed-0b418417f1bb"],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "agent", "skill_ids"],
+      "writes": [
+        "s|col|public.agent.skill_ids",
+        "n|col|public.agent.skill_ids",
+        "e|col|public.agent.skill_ids"
+      ],
+      "reads": ["n|tbl|public.agent", "n|sch|public"]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "agent",
+        "name": "skill_ids",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 1,
+        "default": "'{}'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    }
+  ]
+}

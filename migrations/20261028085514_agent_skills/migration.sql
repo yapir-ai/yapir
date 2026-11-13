@@ -1,0 +1,1 @@
+ALTER TABLE "agent" ADD COLUMN "skill_ids" uuid[] DEFAULT '{}'::uuid[] NOT NULL;

@@ -1,0 +1,27 @@
+{
+  "name": "@yapir-ai/cli",
+  "version": "0.2.0",
+  "description": "Yapir command line: every Yapir API route as a command",
+  "license": "FSL-1.1-ALv2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapir-ai/yapir.git",
+    "directory": "cli"
+  },
+  "bin": {
+    "yapir": "dist/yapir.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun build src/main.ts --target=node --packages=external --outfile=dist/yapir.js"
+  },
+  "dependencies": {
+    "commander": "^15.0.0"
+  }
+}

@@ -1,0 +1,60 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  # GitHub Actions and GitLab CI executions run this image.
+  # A newer commit cancels the push in progress, so `latest` follows the order of the commits.
+  image:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-image
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+      - id: version
+        run: echo "version=$(git describe --tags --match 'v*' --always)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: src/server/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/yapir-ai/runner:latest
+            ghcr.io/yapir-ai/runner:${{ steps.version.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # The instances deploy from their own repository, which holds their configuration.
+  # The Worker dispatches the image of its commit, so it is pushed first.
+  instances:
+    needs: image
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh workflow run deploy.yml --repo yapir-ai/ops --field "ref=$REF"
+        env:
+          GH_TOKEN: ${{ secrets.OPS_TOKEN }}
+          REF: ${{ inputs.ref || (github.ref_type == 'tag' && github.ref_name) || github.sha }}

@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../node_modules/.tmp/tsconfig.web.tsbuildinfo",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "../server/worker-configuration.d.ts"],
+    "allowArbitraryExtensions": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["."]
+}

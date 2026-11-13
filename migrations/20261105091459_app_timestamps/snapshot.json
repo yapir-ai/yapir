@@ -1,0 +1,178 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "695770c8-d84d-4796-8b98-9801deb058e6",
+  "prevIds": ["b3f73ede-194a-41a5-8e3b-bf926ea85fed"],
+  "footprints": [
+    {
+      "statementType": "alter_column",
+      "statementTarget": ["column", "public", "conversation", "created_at"],
+      "writes": ["s|colprop|public.conversation.created_at.default"],
+      "reads": [
+        "n|tbl|public.conversation",
+        "n|sch|public",
+        "n|col|public.conversation.created_at"
+      ],
+      "sqlHash": "9d94bb9a04fac221"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": ["column", "public", "conversation", "updated_at"],
+      "writes": ["s|colprop|public.conversation.updated_at.default"],
+      "reads": [
+        "n|tbl|public.conversation",
+        "n|sch|public",
+        "n|col|public.conversation.updated_at"
+      ],
+      "sqlHash": "480d2097df193e99"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": ["column", "public", "effect", "created_at"],
+      "writes": ["s|colprop|public.effect.created_at.default"],
+      "reads": [
+        "n|tbl|public.effect",
+        "n|sch|public",
+        "n|col|public.effect.created_at"
+      ],
+      "sqlHash": "c0bff1c9fea79f44"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "execution_message",
+        "created_at"
+      ],
+      "writes": ["s|colprop|public.execution_message.created_at.default"],
+      "reads": [
+        "n|tbl|public.execution_message",
+        "n|sch|public",
+        "n|col|public.execution_message.created_at"
+      ],
+      "sqlHash": "8b8411355f51c05f"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": ["column", "public", "execution", "created_at"],
+      "writes": ["s|colprop|public.execution.created_at.default"],
+      "reads": [
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|col|public.execution.created_at"
+      ],
+      "sqlHash": "a30eb56c27bd7ac0"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": ["column", "public", "task_association", "created_at"],
+      "writes": ["s|colprop|public.task_association.created_at.default"],
+      "reads": [
+        "n|tbl|public.task_association",
+        "n|sch|public",
+        "n|col|public.task_association.created_at"
+      ],
+      "sqlHash": "34380e01a4b4438c"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": ["column", "public", "task_event", "received_at"],
+      "writes": ["s|colprop|public.task_event.received_at.default"],
+      "reads": [
+        "n|tbl|public.task_event",
+        "n|sch|public",
+        "n|col|public.task_event.received_at"
+      ],
+      "sqlHash": "4b25914eb81fe29d"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": ["column", "public", "task", "created_at"],
+      "writes": ["s|colprop|public.task.created_at.default"],
+      "reads": [
+        "n|tbl|public.task",
+        "n|sch|public",
+        "n|col|public.task.created_at"
+      ],
+      "sqlHash": "a006659faddf1a17"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": ["column", "public", "task", "last_execution_at"],
+      "writes": ["s|colprop|public.task.last_execution_at.default"],
+      "reads": [
+        "n|tbl|public.task",
+        "n|sch|public",
+        "n|col|public.task.last_execution_at"
+      ],
+      "sqlHash": "32815d7ed6ca58d6"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"conversation\",\"created_at\"]",
+      "set": {
+        "default": null
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"conversation\",\"updated_at\"]",
+      "set": {
+        "default": null
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"effect\",\"created_at\"]",
+      "set": {
+        "default": null
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"execution_message\",\"created_at\"]",
+      "set": {
+        "default": null
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"execution\",\"created_at\"]",
+      "set": {
+        "default": null
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"task_association\",\"created_at\"]",
+      "set": {
+        "default": null
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"task_event\",\"received_at\"]",
+      "set": {
+        "default": null
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"task\",\"created_at\"]",
+      "set": {
+        "default": null
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"task\",\"last_execution_at\"]",
+      "set": {
+        "default": null
+      }
+    }
+  ]
+}

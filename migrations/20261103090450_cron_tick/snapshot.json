@@ -1,0 +1,86 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "73dd536d-3cbc-43ec-b1ae-79a35888aedc",
+  "prevIds": ["8b9bca9b-b41d-4344-8462-0fcf5cf598c7"],
+  "footprints": [
+    {
+      "statementType": "create_table",
+      "statementTarget": ["table", "public", "cron_tick"],
+      "writes": [
+        "s|tbl|public.cron_tick",
+        "n|tbl|public.cron_tick",
+        "e|tbl|public.cron_tick",
+        "n|rel|public.cron_tick",
+        "n|type|public.cron_tick",
+        "n|rel|public.cron_tick_pkey"
+      ],
+      "reads": ["n|sch|public"]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "cron_tick",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cron_tick",
+        "name": "id",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "true",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cron_tick",
+        "name": "scheduled_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cron_tick",
+        "name": "cron_tick_pkey",
+        "columns": ["id"],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "cron_tick",
+        "name": "cron_tick_single_row",
+        "value": "\"id\"",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

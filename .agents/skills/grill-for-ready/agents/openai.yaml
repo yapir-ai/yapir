@@ -1,0 +1,5 @@
+interface:
+  display_name: "Grill for Ready"
+  short_description: "Prepare a slice for implementation handoff"
+policy:
+  allow_implicit_invocation: false

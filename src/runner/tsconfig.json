@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../node_modules/.tmp/tsconfig.runner.tsbuildinfo",
+    "lib": ["ES2023", "ESNext.Disposable"],
+    "types": ["bun", "../server/worker-configuration.d.ts", "vite/client"]
+  },
+  "include": ["."]
+}

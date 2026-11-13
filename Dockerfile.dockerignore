@@ -1,0 +1,8 @@
+**
+!package.json
+!bun.lock
+!tsconfig.json
+!src/server
+!src/content
+!migrations
+!dist/client

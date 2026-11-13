@@ -1,0 +1,658 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "f32361a3-5f18-4db2-853c-ad9f1bba4e56",
+  "prevIds": [
+    "9019359d-22f0-40fb-8146-788ab820d850",
+    "210e9bbe-a105-4add-bf9b-e626e974cfb6",
+    "48609e02-8c74-457c-9b7c-c961974e0eaa"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": ["enum", "public", "project_role"],
+      "writes": [
+        "s|enum|public.project_role",
+        "n|enum|public.project_role",
+        "e|enum|public.project_role",
+        "n|type|public.project_role"
+      ],
+      "reads": ["n|sch|public"]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": ["table", "public", "project_member"],
+      "writes": [
+        "s|tbl|public.project_member",
+        "n|tbl|public.project_member",
+        "e|tbl|public.project_member",
+        "n|rel|public.project_member",
+        "n|type|public.project_member",
+        "n|rel|public.project_member_pkey"
+      ],
+      "reads": ["n|sch|public", "n|enum|public.project_role"]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": ["table", "public", "project_repository"],
+      "writes": [
+        "s|tbl|public.project_repository",
+        "n|tbl|public.project_repository",
+        "e|tbl|public.project_repository",
+        "n|rel|public.project_repository",
+        "n|type|public.project_repository",
+        "n|rel|public.project_repository_pkey"
+      ],
+      "reads": ["n|sch|public"]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": ["table", "public", "project"],
+      "writes": [
+        "s|tbl|public.project",
+        "n|tbl|public.project",
+        "e|tbl|public.project",
+        "n|rel|public.project",
+        "n|type|public.project",
+        "n|rel|public.project_pkey"
+      ],
+      "reads": ["n|sch|public"]
+    },
+    {
+      "statementType": "drop_fk",
+      "statementTarget": ["table", "public", "automation"],
+      "writes": [
+        "s|fk|public.automation.automation_repository_id_repository_id_fkey",
+        "n|fk|public.automation.automation_repository_id_repository_id_fkey",
+        "e|fk|public.automation.automation_repository_id_repository_id_fkey",
+        "n|con|public.automation.automation_repository_id_repository_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.automation",
+        "n|sch|public",
+        "e|col|public.automation.repository_id"
+      ]
+    },
+    {
+      "statementType": "drop_table",
+      "statementTarget": ["table", "public", "repository_member"],
+      "writes": [
+        "s|tbl|public.repository_member",
+        "n|tbl|public.repository_member",
+        "e|tbl|public.repository_member",
+        "n|rel|public.repository_member",
+        "n|type|public.repository_member"
+      ],
+      "reads": ["n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "automation", "project_id"],
+      "writes": [
+        "s|col|public.automation.project_id",
+        "n|col|public.automation.project_id",
+        "e|col|public.automation.project_id"
+      ],
+      "reads": ["n|tbl|public.automation", "n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "automation", "ci_repository_id"],
+      "writes": [
+        "s|col|public.automation.ci_repository_id",
+        "n|col|public.automation.ci_repository_id",
+        "e|col|public.automation.ci_repository_id"
+      ],
+      "reads": ["n|tbl|public.automation", "n|sch|public"]
+    },
+    {
+      "statementType": "drop_column",
+      "statementTarget": ["column", "public", "automation", "repository_id"],
+      "writes": [
+        "s|col|public.automation.repository_id",
+        "n|col|public.automation.repository_id",
+        "e|col|public.automation.repository_id"
+      ],
+      "reads": ["n|tbl|public.automation", "n|sch|public"]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "project_repository",
+        "project_repository_repository_id_index"
+      ],
+      "writes": [
+        "s|idx|public.project_repository_repository_id_index",
+        "n|idx|public.project_repository_repository_id_index",
+        "e|idx|public.project_repository_repository_id_index",
+        "n|rel|public.project_repository_repository_id_index"
+      ],
+      "reads": [
+        "n|tbl|public.project_repository",
+        "n|sch|public",
+        "n|col|public.project_repository.repository_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "automation"],
+      "writes": [
+        "s|fk|public.automation.automation_project_id_project_id_fkey",
+        "n|fk|public.automation.automation_project_id_project_id_fkey",
+        "e|fk|public.automation.automation_project_id_project_id_fkey",
+        "n|con|public.automation.automation_project_id_project_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.automation",
+        "n|sch|public",
+        "n|tbl|public.project",
+        "n|sch|public",
+        "n|col|public.automation.project_id",
+        "n|col|public.project.id",
+        "e|uniqueness|public.project.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "automation"],
+      "writes": [
+        "s|fk|public.automation.automation_ci_repository_id_fkey",
+        "n|fk|public.automation.automation_ci_repository_id_fkey",
+        "e|fk|public.automation.automation_ci_repository_id_fkey",
+        "n|con|public.automation.automation_ci_repository_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.automation",
+        "n|sch|public",
+        "n|tbl|public.project_repository",
+        "n|sch|public",
+        "n|col|public.automation.project_id",
+        "n|col|public.automation.ci_repository_id",
+        "n|col|public.project_repository.project_id",
+        "n|col|public.project_repository.repository_id",
+        "e|uniqueness|public.project_repository.project_id.repository_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "project_member"],
+      "writes": [
+        "s|fk|public.project_member.project_member_project_id_project_id_fkey",
+        "n|fk|public.project_member.project_member_project_id_project_id_fkey",
+        "e|fk|public.project_member.project_member_project_id_project_id_fkey",
+        "n|con|public.project_member.project_member_project_id_project_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.project_member",
+        "n|sch|public",
+        "n|tbl|public.project",
+        "n|sch|public",
+        "n|col|public.project_member.project_id",
+        "n|col|public.project.id",
+        "e|uniqueness|public.project.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "project_member"],
+      "writes": [
+        "s|fk|public.project_member.project_member_user_id_user_id_fkey",
+        "n|fk|public.project_member.project_member_user_id_user_id_fkey",
+        "e|fk|public.project_member.project_member_user_id_user_id_fkey",
+        "n|con|public.project_member.project_member_user_id_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.project_member",
+        "n|sch|public",
+        "n|tbl|public.user",
+        "n|sch|public",
+        "n|col|public.project_member.user_id",
+        "n|col|public.user.id",
+        "e|uniqueness|public.user.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "project_repository"],
+      "writes": [
+        "s|fk|public.project_repository.project_repository_project_id_project_id_fkey",
+        "n|fk|public.project_repository.project_repository_project_id_project_id_fkey",
+        "e|fk|public.project_repository.project_repository_project_id_project_id_fkey",
+        "n|con|public.project_repository.project_repository_project_id_project_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.project_repository",
+        "n|sch|public",
+        "n|tbl|public.project",
+        "n|sch|public",
+        "n|col|public.project_repository.project_id",
+        "n|col|public.project.id",
+        "e|uniqueness|public.project.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "project_repository"],
+      "writes": [
+        "s|fk|public.project_repository.project_repository_repository_id_repository_id_fkey",
+        "n|fk|public.project_repository.project_repository_repository_id_repository_id_fkey",
+        "e|fk|public.project_repository.project_repository_repository_id_repository_id_fkey",
+        "n|con|public.project_repository.project_repository_repository_id_repository_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.project_repository",
+        "n|sch|public",
+        "n|tbl|public.repository",
+        "n|sch|public",
+        "n|col|public.project_repository.repository_id",
+        "n|col|public.repository.id",
+        "e|uniqueness|public.repository.id"
+      ]
+    },
+    {
+      "statementType": "drop_enum",
+      "statementTarget": ["enum", "public", "repository_role"],
+      "writes": [
+        "s|enum|public.repository_role",
+        "n|enum|public.repository_role",
+        "e|enum|public.repository_role",
+        "n|type|public.repository_role"
+      ],
+      "reads": ["n|sch|public"]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "project_member",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "project_repository",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "project",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "project_role",
+        "values": ["admin", "user"],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "automation",
+        "name": "project_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "automation",
+        "name": "ci_repository_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_member",
+        "name": "project_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_member",
+        "name": "user_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_member",
+        "name": "role",
+        "type": "project_role",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_repository",
+        "name": "project_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_repository",
+        "name": "repository_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project",
+        "name": "name",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project",
+        "name": "instructions",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "''",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_repository",
+        "name": "project_repository_repository_id_index",
+        "nameExplicit": false,
+        "columns": [
+          {
+            "value": "repository_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "automation",
+        "name": "automation_project_id_project_id_fkey",
+        "nameExplicit": false,
+        "columns": ["project_id"],
+        "schemaTo": "public",
+        "tableTo": "project",
+        "columnsTo": ["id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "automation",
+        "name": "automation_ci_repository_id_fkey",
+        "nameExplicit": true,
+        "columns": ["project_id", "ci_repository_id"],
+        "schemaTo": "public",
+        "tableTo": "project_repository",
+        "columnsTo": ["project_id", "repository_id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_member",
+        "name": "project_member_project_id_project_id_fkey",
+        "nameExplicit": false,
+        "columns": ["project_id"],
+        "schemaTo": "public",
+        "tableTo": "project",
+        "columnsTo": ["id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_member",
+        "name": "project_member_user_id_user_id_fkey",
+        "nameExplicit": false,
+        "columns": ["user_id"],
+        "schemaTo": "public",
+        "tableTo": "user",
+        "columnsTo": ["id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_repository",
+        "name": "project_repository_project_id_project_id_fkey",
+        "nameExplicit": false,
+        "columns": ["project_id"],
+        "schemaTo": "public",
+        "tableTo": "project",
+        "columnsTo": ["id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_repository",
+        "name": "project_repository_repository_id_repository_id_fkey",
+        "nameExplicit": false,
+        "columns": ["repository_id"],
+        "schemaTo": "public",
+        "tableTo": "repository",
+        "columnsTo": ["id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_member",
+        "name": "project_member_pkey",
+        "columns": ["project_id", "user_id"],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project_repository",
+        "name": "project_repository_pkey",
+        "columns": ["project_id", "repository_id"],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project",
+        "name": "project_pkey",
+        "columns": ["id"],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "tables\u0000[\"public\",\"repository_member\"]"
+    },
+    {
+      "op": "drop",
+      "key": "enums\u0000[\"public\",\"repository_role\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"automation\",\"repository_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"repository_member\",\"repository_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"repository_member\",\"user_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"repository_member\",\"role\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"automation\",\"automation_repository_id_repository_id_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"repository_member\",\"repository_member_repository_id_repository_id_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"repository_member\",\"repository_member_user_id_user_id_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "pks\u0000[\"public\",\"repository_member\",\"repository_member_pkey\"]"
+    }
+  ]
+}

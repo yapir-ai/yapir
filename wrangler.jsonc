@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // The configuration that all instances share. To add the values of an instance, see docs/deployment.md.
+  "name": "yapir",
+  "main": "./src/server/cloudflare.ts",
+  "compatibility_date": "2026-10-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true, "traces": { "enabled": true } },
+  // Every minute: the execution lease sweep, and a schedule event matched against schedule triggers.
+  "triggers": { "crons": ["* * * * *"] },
+  // Local development sets them in .env.
+  "vars": {
+    // Public URL of this server, used by browsers and runners.
+    "SERVER_URL": "",
+    // Runner image of the CI execution environments.
+    "RUNNER_IMAGE": "ghcr.io/yapir-ai/runner:latest",
+    // The OIDC client that signs users in.
+    "OIDC_DISCOVERY_URL": "",
+    "OIDC_CLIENT_ID": "",
+    // Comma-separated emails of the Organization Admins designated by the configuration.
+    "ORGANIZATION_ADMIN_EMAILS": "",
+  },
+  // Each task's harness state: its saved session.
+  "r2_buckets": [{ "binding": "STATE_BUCKET", "bucket_name": "yapir-state" }],
+  // Deletes the Durable Objects of the former Yapir sandbox, and their data. On a new Worker, it has no effect.
+  "exports": {
+    "Sandbox": { "type": "durable-object", "state": "deleted" },
+    "TaskSandbox": { "type": "durable-object", "state": "deleted" },
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "",
+      "localConnectionString": "postgres://localhost:",
+    },
+  ],
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+  },
+}

@@ -1,0 +1,37 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "e0846a62-71de-4920-9449-1782b10a0b4a",
+  "prevIds": ["695770c8-d84d-4796-8b98-9801deb058e6"],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "mcp_server", "fixed_ip"],
+      "writes": [
+        "s|col|public.mcp_server.fixed_ip",
+        "n|col|public.mcp_server.fixed_ip",
+        "e|col|public.mcp_server.fixed_ip"
+      ],
+      "reads": ["n|tbl|public.mcp_server", "n|sch|public"]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "mcp_server",
+        "name": "fixed_ip",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "false",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "210e9bbe-a105-4add-bf9b-e626e974cfb6",
+  "prevIds": ["10493794-1fd0-4959-932c-74b17855bd3e"],
+  "footprints": [
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": ["table", "public", "effect"],
+      "writes": [
+        "s|fk|public.effect.effect_task_id_task_id_fkey",
+        "n|fk|public.effect.effect_task_id_task_id_fkey",
+        "e|fk|public.effect.effect_task_id_task_id_fkey",
+        "n|con|public.effect.effect_task_id_task_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.effect",
+        "n|sch|public",
+        "n|tbl|public.task",
+        "n|sch|public",
+        "n|col|public.effect.task_id",
+        "n|col|public.task.id",
+        "e|uniqueness|public.task.id"
+      ],
+      "sqlHash": "2342663cf1c2e7bc"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": ["table", "public", "effect"],
+      "writes": [
+        "s|fk|public.effect.effect_execution_id_execution_id_fkey",
+        "n|fk|public.effect.effect_execution_id_execution_id_fkey",
+        "e|fk|public.effect.effect_execution_id_execution_id_fkey",
+        "n|con|public.effect.effect_execution_id_execution_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.effect",
+        "n|sch|public",
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|col|public.effect.execution_id",
+        "n|col|public.execution.id",
+        "e|uniqueness|public.execution.id"
+      ],
+      "sqlHash": "6570fa9392cf7162"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": ["table", "public", "execution_message"],
+      "writes": [
+        "s|fk|public.execution_message.execution_message_execution_id_execution_id_fkey",
+        "n|fk|public.execution_message.execution_message_execution_id_execution_id_fkey",
+        "e|fk|public.execution_message.execution_message_execution_id_execution_id_fkey",
+        "n|con|public.execution_message.execution_message_execution_id_execution_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.execution_message",
+        "n|sch|public",
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|col|public.execution_message.execution_id",
+        "n|col|public.execution.id",
+        "e|uniqueness|public.execution.id"
+      ],
+      "sqlHash": "74bc98e5f2a5df4b"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": ["table", "public", "execution"],
+      "writes": [
+        "s|fk|public.execution.execution_task_id_task_id_fkey",
+        "n|fk|public.execution.execution_task_id_task_id_fkey",
+        "e|fk|public.execution.execution_task_id_task_id_fkey",
+        "n|con|public.execution.execution_task_id_task_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|tbl|public.task",
+        "n|sch|public",
+        "n|col|public.execution.task_id",
+        "n|col|public.task.id",
+        "e|uniqueness|public.task.id"
+      ],
+      "sqlHash": "549399644b638841"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": ["table", "public", "task_association"],
+      "writes": [
+        "s|fk|public.task_association.task_association_zXYkotEB9Z17_fkey",
+        "n|fk|public.task_association.task_association_zXYkotEB9Z17_fkey",
+        "e|fk|public.task_association.task_association_zXYkotEB9Z17_fkey",
+        "n|con|public.task_association.task_association_zXYkotEB9Z17_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.task_association",
+        "n|sch|public",
+        "n|tbl|public.task",
+        "n|sch|public",
+        "n|col|public.task_association.task_id",
+        "n|col|public.task_association.automation_id",
+        "n|col|public.task.id",
+        "n|col|public.task.automation_id",
+        "e|uniqueness|public.task.automation_id.id"
+      ],
+      "sqlHash": "e3031546d48217eb"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": ["table", "public", "task_event"],
+      "writes": [
+        "s|fk|public.task_event.task_event_task_id_task_id_fkey",
+        "n|fk|public.task_event.task_event_task_id_task_id_fkey",
+        "e|fk|public.task_event.task_event_task_id_task_id_fkey",
+        "n|con|public.task_event.task_event_task_id_task_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.task_event",
+        "n|sch|public",
+        "n|tbl|public.task",
+        "n|sch|public",
+        "n|col|public.task_event.task_id",
+        "n|col|public.task.id",
+        "e|uniqueness|public.task.id"
+      ],
+      "sqlHash": "a6831c0605c399ac"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": ["table", "public", "task_event"],
+      "writes": [
+        "s|fk|public.task_event.task_event_execution_id_execution_id_fkey",
+        "n|fk|public.task_event.task_event_execution_id_execution_id_fkey",
+        "e|fk|public.task_event.task_event_execution_id_execution_id_fkey",
+        "n|con|public.task_event.task_event_execution_id_execution_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.task_event",
+        "n|sch|public",
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|col|public.task_event.execution_id",
+        "n|col|public.execution.id",
+        "e|uniqueness|public.execution.id"
+      ],
+      "sqlHash": "3c9ae202409d258b"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"effect\",\"effect_task_id_task_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"effect\",\"effect_execution_id_execution_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"execution_message\",\"execution_message_execution_id_execution_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"execution\",\"execution_task_id_task_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"task_association\",\"task_association_zXYkotEB9Z17_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"task_event\",\"task_event_task_id_task_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"task_event\",\"task_event_execution_id_execution_id_fkey\"]",
+      "set": {
+        "onDelete": "CASCADE"
+      }
+    }
+  ]
+}

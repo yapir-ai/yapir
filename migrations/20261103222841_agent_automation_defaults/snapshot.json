@@ -1,0 +1,145 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "b3f73ede-194a-41a5-8e3b-bf926ea85fed",
+  "prevIds": ["73dd536d-3cbc-43ec-b1ae-79a35888aedc"],
+  "footprints": [
+    {
+      "statementType": "drop_table",
+      "statementTarget": ["table", "public", "preset"],
+      "writes": [
+        "s|tbl|public.preset",
+        "n|tbl|public.preset",
+        "e|tbl|public.preset",
+        "n|rel|public.preset",
+        "n|type|public.preset"
+      ],
+      "reads": ["n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "agent", "description"],
+      "writes": [
+        "s|col|public.agent.description",
+        "n|col|public.agent.description",
+        "e|col|public.agent.description"
+      ],
+      "reads": ["n|tbl|public.agent", "n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "agent", "triggers"],
+      "writes": [
+        "s|col|public.agent.triggers",
+        "n|col|public.agent.triggers",
+        "e|col|public.agent.triggers"
+      ],
+      "reads": ["n|tbl|public.agent", "n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "agent", "capabilities"],
+      "writes": [
+        "s|col|public.agent.capabilities",
+        "n|col|public.agent.capabilities",
+        "e|col|public.agent.capabilities"
+      ],
+      "reads": ["n|tbl|public.agent", "n|sch|public"]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "agent",
+        "name": "description",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "agent",
+        "name": "triggers",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'[]'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "agent",
+        "name": "capabilities",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'[]'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "tables\u0000[\"public\",\"preset\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"preset\",\"deleted_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"preset\",\"id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"preset\",\"name\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"preset\",\"description\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"preset\",\"prompt\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"preset\",\"triggers\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"preset\",\"capabilities\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"preset\",\"agent_id\"]"
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"preset\",\"preset_agent_id_agent_id_fkey\"]"
+    },
+    {
+      "op": "drop",
+      "key": "pks\u0000[\"public\",\"preset\",\"preset_pkey\"]"
+    }
+  ]
+}

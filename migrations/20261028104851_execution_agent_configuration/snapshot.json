@@ -1,0 +1,124 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "a360f17b-81e4-47b2-8330-a994ee6c6f1c",
+  "prevIds": ["e0a5f60d-9914-4232-aa89-197b45c18a03"],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "execution", "model_provider_id"],
+      "writes": [
+        "s|col|public.execution.model_provider_id",
+        "n|col|public.execution.model_provider_id",
+        "e|col|public.execution.model_provider_id"
+      ],
+      "reads": ["n|tbl|public.execution", "n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "execution", "effort"],
+      "writes": [
+        "s|col|public.execution.effort",
+        "n|col|public.execution.effort",
+        "e|col|public.execution.effort"
+      ],
+      "reads": ["n|tbl|public.execution", "n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "execution", "harness"],
+      "writes": [
+        "s|col|public.execution.harness",
+        "n|col|public.execution.harness",
+        "e|col|public.execution.harness"
+      ],
+      "reads": ["n|tbl|public.execution", "n|sch|public"]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "execution"],
+      "writes": [
+        "s|fk|public.execution.execution_model_provider_id_model_provider_id_fkey",
+        "n|fk|public.execution.execution_model_provider_id_model_provider_id_fkey",
+        "e|fk|public.execution.execution_model_provider_id_model_provider_id_fkey",
+        "n|con|public.execution.execution_model_provider_id_model_provider_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|tbl|public.model_provider",
+        "n|sch|public",
+        "n|col|public.execution.model_provider_id",
+        "n|col|public.model_provider.id",
+        "e|uniqueness|public.model_provider.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "model_provider_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "effort",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "harness",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "execution_model_provider_id_model_provider_id_fkey",
+        "nameExplicit": false,
+        "columns": ["model_provider_id"],
+        "schemaTo": "public",
+        "tableTo": "model_provider",
+        "columnsTo": ["id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    }
+  ]
+}

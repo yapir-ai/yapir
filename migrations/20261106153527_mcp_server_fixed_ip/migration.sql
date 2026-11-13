@@ -1,0 +1,1 @@
+ALTER TABLE "mcp_server" ADD COLUMN "fixed_ip" boolean DEFAULT false NOT NULL;

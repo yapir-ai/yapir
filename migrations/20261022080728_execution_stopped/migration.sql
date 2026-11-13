@@ -1,0 +1,1 @@
+ALTER TYPE "execution_state" ADD VALUE 'stopped';

@@ -1,0 +1,42 @@
+name: Yapir
+
+on:
+  workflow_dispatch:
+    inputs:
+      dispatch:
+        description: Execution dispatched by Yapir
+        required: true
+
+# One execution of a task at a time: each one restores the state saved by the previous one.
+concurrency:
+  group: yapir-${{ fromJSON(inputs.dispatch).cacheKey }}
+
+# The runner proves its claim with the job's OIDC token.
+permissions:
+  id-token: write
+
+jobs:
+  execution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    container:
+      image: ${{ fromJSON(inputs.dispatch).image }}
+      # The runner redirects the agent's traffic to its egress proxy.
+      options: --cap-add NET_ADMIN
+    steps:
+      - uses: actions/cache/restore@v6
+        id: state
+        with:
+          path: /github/home
+          key: yapir-${{ fromJSON(inputs.dispatch).cacheKey }}-${{ github.run_id }}
+          restore-keys: yapir-${{ fromJSON(inputs.dispatch).cacheKey }}-
+      # The payload goes through the environment: templating it into the command is an injection vector.
+      - run: yapir-runner run
+        env:
+          YAPIR_DISPATCH: ${{ inputs.dispatch }}
+      # A failed execution keeps its session: the next one resumes it.
+      - if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: /github/home
+          key: ${{ steps.state.outputs.cache-primary-key }}

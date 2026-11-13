@@ -1,0 +1,10 @@
+- always aim for drizzle query v2 when possible
+- Prefer front end joins using tanstack db rather than in backend joins & dto composition
+- merge near-identical checks on the same data into one check with one error. A more precise error code does not justify an extra check or query
+- Give every authenticated API route an `operationId` and a `summary` with `describeRoute`, and every request field that is not self-explanatory a Zod `.describe()`. The `operationId` is the name of the operation the route calls, without the `Operation` suffix, such as `projectMemberList`; it names the CLI command `yapir project-member list`. Write the summaries and descriptions for an agent that does not know Yapir
+- No comments by default. Add one only for a non-obvious constraint that the code cannot show, such as a platform behavior. Do not describe what the code does. Trade-offs go in the pull request description
+- Update with `PATCH` and a partial request DTO, never `PUT`
+- Group code by responsibility: a file specific to one platform or provider lives with it, not at the top level of a shared module
+- Select columns explicitly and return a DTO, never a raw `select` row
+- Build UI from the existing components and patterns (lists, items, badges) before creating new ones, and align it with the screens around it
+- Remove what your change makes obsolete: config, tags, lint-disable comments

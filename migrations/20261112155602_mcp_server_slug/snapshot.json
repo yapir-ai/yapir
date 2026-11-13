@@ -1,0 +1,86 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "174c7fb0-49ac-4be8-9f1e-355f53f83b6d",
+  "prevIds": ["6407fc0b-7f53-4d93-b233-ff6ed7f46b0c"],
+  "footprints": [
+    {
+      "statementType": "drop_unique",
+      "statementTarget": ["table", "public", "mcp_server"],
+      "writes": [
+        "s|uq|public.mcp_server.mcp_server_name_key",
+        "n|uq|public.mcp_server.mcp_server_name_key",
+        "e|uq|public.mcp_server.mcp_server_name_key",
+        "n|con|public.mcp_server.mcp_server_name_key",
+        "n|rel|public.mcp_server_name_key"
+      ],
+      "reads": [
+        "n|tbl|public.mcp_server",
+        "n|sch|public",
+        "e|col|public.mcp_server.name"
+      ],
+      "sharedWrites": ["e|uniqueness|public.mcp_server.name"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "mcp_server", "slug"],
+      "writes": [
+        "s|col|public.mcp_server.slug",
+        "n|col|public.mcp_server.slug",
+        "e|col|public.mcp_server.slug"
+      ],
+      "reads": ["n|tbl|public.mcp_server", "n|sch|public"]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": ["table", "public", "mcp_server"],
+      "writes": [
+        "s|uq|public.mcp_server.mcp_server_slug_key",
+        "n|uq|public.mcp_server.mcp_server_slug_key",
+        "e|uq|public.mcp_server.mcp_server_slug_key",
+        "n|con|public.mcp_server.mcp_server_slug_key",
+        "n|rel|public.mcp_server_slug_key"
+      ],
+      "reads": [
+        "n|tbl|public.mcp_server",
+        "n|sch|public",
+        "n|col|public.mcp_server.slug"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "mcp_server",
+        "name": "slug",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "mcp_server",
+        "name": "mcp_server_slug_key",
+        "nameExplicit": false,
+        "columns": ["slug"],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "uniques\u0000[\"public\",\"mcp_server\",\"mcp_server_name_key\"]"
+    }
+  ]
+}

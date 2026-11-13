@@ -1,0 +1,16 @@
+{
+  "$schema": "https://t3.codes/schema/t3.json",
+  "scripts": [
+    {
+      "name": "Set up the worktree",
+      "command": "ln -sf \"$T3CODE_PROJECT_ROOT/.env\" . && bun install",
+      "runOnWorktreeCreate": true,
+      "async": false
+    },
+    {
+      "name": "Stop the instances",
+      "command": "bun instance down --all",
+      "runOnSettle": true
+    }
+  ]
+}

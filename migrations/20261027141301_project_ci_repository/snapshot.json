@@ -1,0 +1,72 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "775f0349-1b0d-4f3d-a6ed-0b418417f1bb",
+  "prevIds": ["70598e83-6e82-4f0f-bec7-aea47b465a92"],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "project", "ci_repository_id"],
+      "writes": [
+        "s|col|public.project.ci_repository_id",
+        "n|col|public.project.ci_repository_id",
+        "e|col|public.project.ci_repository_id"
+      ],
+      "reads": ["n|tbl|public.project", "n|sch|public"]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "project"],
+      "writes": [
+        "s|fk|public.project.project_ci_repository_id_repository_id_fkey",
+        "n|fk|public.project.project_ci_repository_id_repository_id_fkey",
+        "e|fk|public.project.project_ci_repository_id_repository_id_fkey",
+        "n|con|public.project.project_ci_repository_id_repository_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.project",
+        "n|sch|public",
+        "n|tbl|public.repository",
+        "n|sch|public",
+        "n|col|public.project.ci_repository_id",
+        "n|col|public.repository.id",
+        "e|uniqueness|public.repository.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project",
+        "name": "ci_repository_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "project",
+        "name": "project_ci_repository_id_repository_id_fkey",
+        "nameExplicit": false,
+        "columns": ["ci_repository_id"],
+        "schemaTo": "public",
+        "tableTo": "repository",
+        "columnsTo": ["id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    }
+  ]
+}

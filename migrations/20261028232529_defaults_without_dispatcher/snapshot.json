@@ -1,0 +1,25 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "8b9bca9b-b41d-4344-8462-0fcf5cf598c7",
+  "prevIds": ["a360f17b-81e4-47b2-8330-a994ee6c6f1c"],
+  "footprints": [
+    {
+      "statementType": "drop_column",
+      "statementTarget": ["column", "public", "defaults", "dispatcher"],
+      "writes": [
+        "s|col|public.defaults.dispatcher",
+        "n|col|public.defaults.dispatcher",
+        "e|col|public.defaults.dispatcher"
+      ],
+      "reads": ["n|tbl|public.defaults", "n|sch|public"]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"defaults\",\"dispatcher\"]"
+    }
+  ]
+}

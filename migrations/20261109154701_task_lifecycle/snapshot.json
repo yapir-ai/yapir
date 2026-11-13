@@ -1,0 +1,491 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "6407fc0b-7f53-4d93-b233-ff6ed7f46b0c",
+  "prevIds": ["e0846a62-71de-4920-9449-1782b10a0b4a"],
+  "footprints": [
+    {
+      "statementType": "create_enum",
+      "statementTarget": ["enum", "public", "execution_outcome"],
+      "writes": [
+        "s|enum|public.execution_outcome",
+        "n|enum|public.execution_outcome",
+        "e|enum|public.execution_outcome",
+        "n|type|public.execution_outcome"
+      ],
+      "reads": ["n|sch|public"]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": ["enum", "public", "task_event_state"],
+      "writes": [
+        "s|enum|public.task_event_state",
+        "n|enum|public.task_event_state",
+        "e|enum|public.task_event_state",
+        "n|type|public.task_event_state"
+      ],
+      "reads": ["n|sch|public"]
+    },
+    {
+      "statementType": "create_enum",
+      "statementTarget": ["enum", "public", "task_state"],
+      "writes": [
+        "s|enum|public.task_state",
+        "n|enum|public.task_state",
+        "e|enum|public.task_state",
+        "n|type|public.task_state"
+      ],
+      "reads": ["n|sch|public"]
+    },
+    {
+      "statementType": "drop_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "execution",
+        "execution_task_id_created_at_index"
+      ],
+      "writes": [
+        "s|idx|public.execution_task_id_created_at_index",
+        "n|idx|public.execution_task_id_created_at_index",
+        "e|idx|public.execution_task_id_created_at_index",
+        "n|rel|public.execution_task_id_created_at_index"
+      ],
+      "reads": [
+        "e|tbl|public.execution",
+        "n|sch|public",
+        "e|col|public.execution.task_id",
+        "e|col|public.execution.created_at"
+      ],
+      "sharedWrites": []
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "execution", "outcome"],
+      "writes": [
+        "s|col|public.execution.outcome",
+        "n|col|public.execution.outcome",
+        "e|col|public.execution.outcome"
+      ],
+      "reads": [
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|enum|public.execution_outcome"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "execution", "queued_at"],
+      "writes": [
+        "s|col|public.execution.queued_at",
+        "n|col|public.execution.queued_at",
+        "e|col|public.execution.queued_at"
+      ],
+      "reads": ["n|tbl|public.execution", "n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "task_event", "state"],
+      "writes": [
+        "s|col|public.task_event.state",
+        "n|col|public.task_event.state",
+        "e|col|public.task_event.state"
+      ],
+      "reads": [
+        "n|tbl|public.task_event",
+        "n|sch|public",
+        "n|enum|public.task_event_state"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "task", "state"],
+      "writes": [
+        "s|col|public.task.state",
+        "n|col|public.task.state",
+        "e|col|public.task.state"
+      ],
+      "reads": ["n|tbl|public.task", "n|sch|public", "n|enum|public.task_state"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "task", "consecutive_failures"],
+      "writes": [
+        "s|col|public.task.consecutive_failures",
+        "n|col|public.task.consecutive_failures",
+        "e|col|public.task.consecutive_failures"
+      ],
+      "reads": ["n|tbl|public.task", "n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "task", "active_execution_id"],
+      "writes": [
+        "s|col|public.task.active_execution_id",
+        "n|col|public.task.active_execution_id",
+        "e|col|public.task.active_execution_id"
+      ],
+      "reads": ["n|tbl|public.task", "n|sch|public"]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "task", "state_changed_at"],
+      "writes": [
+        "s|col|public.task.state_changed_at",
+        "n|col|public.task.state_changed_at",
+        "e|col|public.task.state_changed_at"
+      ],
+      "reads": ["n|tbl|public.task", "n|sch|public"]
+    },
+    {
+      "statementType": "drop_column",
+      "statementTarget": ["column", "public", "execution", "state"],
+      "writes": [
+        "s|col|public.execution.state",
+        "n|col|public.execution.state",
+        "e|col|public.execution.state"
+      ],
+      "reads": ["n|tbl|public.execution", "n|sch|public"]
+    },
+    {
+      "statementType": "drop_column",
+      "statementTarget": ["column", "public", "execution", "created_at"],
+      "writes": [
+        "s|col|public.execution.created_at",
+        "n|col|public.execution.created_at",
+        "e|col|public.execution.created_at"
+      ],
+      "reads": ["n|tbl|public.execution", "n|sch|public"]
+    },
+    {
+      "statementType": "drop_column",
+      "statementTarget": ["column", "public", "task_event", "acknowledged_at"],
+      "writes": [
+        "s|col|public.task_event.acknowledged_at",
+        "n|col|public.task_event.acknowledged_at",
+        "e|col|public.task_event.acknowledged_at"
+      ],
+      "reads": ["n|tbl|public.task_event", "n|sch|public"]
+    },
+    {
+      "statementType": "drop_column",
+      "statementTarget": ["column", "public", "task", "last_execution_at"],
+      "writes": [
+        "s|col|public.task.last_execution_at",
+        "n|col|public.task.last_execution_at",
+        "e|col|public.task.last_execution_at"
+      ],
+      "reads": ["n|tbl|public.task", "n|sch|public"]
+    },
+    {
+      "statementType": "recreate_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "execution",
+        "execution_active_task_index"
+      ],
+      "writes": [
+        "s|idx|public.execution_active_task_index",
+        "n|idx|public.execution_active_task_index",
+        "e|idx|public.execution_active_task_index",
+        "n|rel|public.execution_active_task_index"
+      ],
+      "reads": [
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|col|public.execution.task_id"
+      ],
+      "sharedWrites": [],
+      "sqlHash": "4c28608a9bdd4d52"
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "execution",
+        "execution_task_id_queued_at_index"
+      ],
+      "writes": [
+        "s|idx|public.execution_task_id_queued_at_index",
+        "n|idx|public.execution_task_id_queued_at_index",
+        "e|idx|public.execution_task_id_queued_at_index",
+        "n|rel|public.execution_task_id_queued_at_index"
+      ],
+      "reads": [
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|col|public.execution.task_id",
+        "n|col|public.execution.queued_at"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": ["table", "public", "task_event"],
+      "writes": [
+        "s|ck|public.task_event.task_event_delivery",
+        "n|ck|public.task_event.task_event_delivery",
+        "e|ck|public.task_event.task_event_delivery",
+        "n|con|public.task_event.task_event_delivery"
+      ],
+      "reads": [
+        "n|tbl|public.task_event",
+        "n|sch|public",
+        "n|col|public.task_event.state",
+        "n|col|public.task_event.execution_id"
+      ]
+    },
+    {
+      "statementType": "add_check",
+      "statementTarget": ["table", "public", "task"],
+      "writes": [
+        "s|ck|public.task.task_active_attempt",
+        "n|ck|public.task.task_active_attempt",
+        "e|ck|public.task.task_active_attempt",
+        "n|con|public.task.task_active_attempt"
+      ],
+      "reads": [
+        "n|tbl|public.task",
+        "n|sch|public",
+        "n|col|public.task.state",
+        "n|col|public.task.active_execution_id"
+      ]
+    },
+    {
+      "statementType": "drop_enum",
+      "statementTarget": ["enum", "public", "execution_state"],
+      "writes": [
+        "s|enum|public.execution_state",
+        "n|enum|public.execution_state",
+        "e|enum|public.execution_state",
+        "n|type|public.execution_state"
+      ],
+      "reads": ["n|sch|public"]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "execution_outcome",
+        "values": ["succeeded", "failed", "stopped"],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "task_event_state",
+        "values": ["pending", "delivered", "acknowledged"],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "task_state",
+        "values": ["idle", "queued", "running", "blocked", "stopped"],
+        "entityType": "enums"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "outcome",
+        "type": "execution_outcome",
+        "typeSchema": "public",
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "queued_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "task_event",
+        "name": "state",
+        "type": "task_event_state",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'pending'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "task",
+        "name": "state",
+        "type": "task_state",
+        "typeSchema": "public",
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "task",
+        "name": "consecutive_failures",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "task",
+        "name": "active_execution_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "task",
+        "name": "state_changed_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "execution_task_id_queued_at_index",
+        "nameExplicit": false,
+        "columns": [
+          {
+            "value": "task_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "queued_at",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "task_event",
+        "name": "task_event_delivery",
+        "value": "(\"state\" = 'pending') = (\"execution_id\" is null)",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "task",
+        "name": "task_active_attempt",
+        "value": "(\"state\" in ('queued', 'running')) = (\"active_execution_id\" is not null)",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "enums\u0000[\"public\",\"execution_state\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"execution\",\"state\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"execution\",\"created_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"task_event\",\"acknowledged_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"task\",\"last_execution_at\"]"
+    },
+    {
+      "op": "drop",
+      "key": "indexes\u0000[\"public\",\"execution_task_id_created_at_index\"]"
+    },
+    {
+      "op": "alter",
+      "key": "indexes\u0000[\"public\",\"execution_active_task_index\"]",
+      "set": {
+        "where": "\"outcome\" is null"
+      }
+    }
+  ]
+}

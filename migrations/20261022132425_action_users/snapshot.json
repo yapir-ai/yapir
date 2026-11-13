@@ -1,0 +1,72 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "48609e02-8c74-457c-9b7c-c961974e0eaa",
+  "prevIds": ["10493794-1fd0-4959-932c-74b17855bd3e"],
+  "footprints": [
+    {
+      "statementType": "add_column",
+      "statementTarget": ["column", "public", "execution", "stopped_by_id"],
+      "writes": [
+        "s|col|public.execution.stopped_by_id",
+        "n|col|public.execution.stopped_by_id",
+        "e|col|public.execution.stopped_by_id"
+      ],
+      "reads": ["n|tbl|public.execution", "n|sch|public"]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": ["table", "public", "execution"],
+      "writes": [
+        "s|fk|public.execution.execution_stopped_by_id_user_id_fkey",
+        "n|fk|public.execution.execution_stopped_by_id_user_id_fkey",
+        "e|fk|public.execution.execution_stopped_by_id_user_id_fkey",
+        "n|con|public.execution.execution_stopped_by_id_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.execution",
+        "n|sch|public",
+        "n|tbl|public.user",
+        "n|sch|public",
+        "n|col|public.execution.stopped_by_id",
+        "n|col|public.user.id",
+        "e|uniqueness|public.user.id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "stopped_by_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "execution",
+        "name": "execution_stopped_by_id_user_id_fkey",
+        "nameExplicit": false,
+        "columns": ["stopped_by_id"],
+        "schemaTo": "public",
+        "tableTo": "user",
+        "columnsTo": ["id"],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    }
+  ]
+}
