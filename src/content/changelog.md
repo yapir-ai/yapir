@@ -4,6 +4,12 @@ description: The changes of each Yapir release, for its users.
 
 # Changelog
 
+## v1.5.0 - 2026-11-16
+
+### Features
+
+- add instructions to automations ([#1](https://github.com/yapir-ai/yapir/issues/1)) ([79333ad](https://github.com/yapir-ai/yapir/commit/79333adc8f68f45797446fbc623c2e79656e1cac))
+
 ## v1.2.0 - 2026-11-12
 
 ### Agents
