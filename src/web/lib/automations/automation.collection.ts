@@ -84,6 +84,7 @@ export function automationsCollection(projectId: string) {
                 capabilities,
                 dispatcher,
                 ciRepositoryId,
+                instructions,
               }) => {
                 const automation = await parseResponse(
                   api.$patch({
@@ -96,6 +97,7 @@ export function automationsCollection(projectId: string) {
                       capabilities,
                       dispatcher,
                       ciRepositoryId,
+                      instructions,
                     },
                   })
                 );

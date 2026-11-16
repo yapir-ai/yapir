@@ -38,7 +38,10 @@ export async function claimContext(
           ])
         ),
       },
-      instructions: agent.prompt,
+      instructions: {
+        agent: agent.prompt,
+        automation: automation.instructions,
+      },
       skills,
       commitIdentity: automationCommitIdentity(automation),
     },

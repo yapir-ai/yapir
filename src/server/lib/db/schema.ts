@@ -423,6 +423,8 @@ export const automationTable = pgTable(
       .references(() => projectTable.id),
     // The repository of the project whose CI runs the executions.
     ciRepositoryId: uuid("ci_repository_id"),
+    // Markdown that the agent receives after the instructions of its project.
+    instructions: text().notNull().default(""),
     triggers: jsonb().$type<Trigger[]>().notNull().default([]),
     capabilities: jsonb().$type<CapabilityGrant[]>().notNull().default([]),
     dispatcher: text().$type<DispatcherName>().notNull(),

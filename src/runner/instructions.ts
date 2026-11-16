@@ -1,4 +1,4 @@
-import type { Project } from "./server";
+import type { Automation, Project } from "./server";
 import { workspaceDirectory } from "./workspace";
 
 const runnerInstructions = `You run unattended, activated by Yapir events. Each user message carries a batch of event notifications.
@@ -10,15 +10,16 @@ const networkPolicyInstructions = `Yapir's network policy limits the hosts that 
 Do not look for another way to reach a refused host: report the host in your answer.`;
 
 export const agentInstructions = (
-  instructions: string,
+  instructions: Automation["instructions"],
   project: Project,
   networkPolicy: boolean
 ) =>
   [
     runnerInstructions,
     networkPolicy && networkPolicyInstructions,
-    instructions,
+    instructions.agent,
     project.instructions,
+    instructions.automation,
     `You have access to these repositories, each cloned in ${workspaceDirectory} at its path:
 ${project.repositories.map(({ path }) => `- ${path}`).join("\n")}
 Their agent documents, such as AGENTS.md, and their skills are a reference.`,

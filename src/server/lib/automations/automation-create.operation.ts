@@ -75,6 +75,7 @@ export function automationCreateOperation({
       agentId: request.agentId,
       projectId: request.projectId,
       ciRepositoryId,
+      instructions: request.instructions,
       triggers: request.triggers ?? defaults.triggers,
       capabilities: request.capabilities ?? defaults.capabilities,
       dispatcher,
