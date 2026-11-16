@@ -14,6 +14,7 @@ export function automationRow({
     agentId,
     projectId,
     ciRepositoryId: null,
+    instructions: "",
     triggers: [],
     capabilities: [],
     dispatcher: "github-actions",

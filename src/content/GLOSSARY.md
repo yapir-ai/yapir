@@ -12,7 +12,7 @@ Yapir coordinates agents and humans around connected tools, with software develo
 
 **Skill**: Instructions in the Agent Skills format that a user shares with the organization, or that a repository contains. Agents select shared skills to receive them in their executions. _Avoid_: Prompt
 
-**Automation**: A configuration within a project that brings together one agent, event triggers, and tool capabilities. _Avoid_: Agent repository, agent
+**Automation**: A configuration within a project that brings together one agent, instructions, event triggers, and tool capabilities. _Avoid_: Agent repository, agent
 
 **Task**: A piece of work of one automation toward one objective, carried out by its agent over one or more executions. _Avoid_: Execution, agent
 

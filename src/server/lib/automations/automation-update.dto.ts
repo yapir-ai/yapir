@@ -2,6 +2,7 @@ import { DispatcherNameSchema } from "@server/lib/executions/dispatcher.dto";
 import { z } from "zod";
 
 import {
+  AutomationInstructionsSchema,
   capabilitiesSchema,
   ciRepositoryIdSchema,
   triggersSchema,
@@ -16,6 +17,7 @@ export const AutomationUpdateRequest = z
       .describe(
         "Whether events activate the agent. An enabled automation requires at least one trigger"
       ),
+    instructions: AutomationInstructionsSchema,
     triggers: triggersSchema,
     capabilities: capabilitiesSchema,
     dispatcher: DispatcherNameSchema,

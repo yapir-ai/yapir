@@ -53,7 +53,7 @@ export const Route = createFileRoute(
   staticData: {
     breadcrumb: <AutomationBreadcrumb />,
     description:
-      "Edit an automation: agent, triggers, capabilities, enabled state; run it manually.",
+      "Edit an automation: agent, instructions, triggers, capabilities, enabled state; run it manually.",
   },
   remountDeps: ({ params }) => params.automationId,
   component: AutomationInfoPage,
@@ -138,6 +138,7 @@ function AutomationInfoPage() {
       capabilities: automation.capabilities,
       dispatcher: automation.dispatcher,
       ciRepositoryId: automation.ciRepositoryId,
+      instructions: automation.instructions,
     },
     validators: { onChange: AutomationUpdateForm },
     onSubmit: async ({ value, formApi }) => {
@@ -180,6 +181,20 @@ function AutomationInfoPage() {
               </form.AppField>
               <form.AppField name="agentId">
                 {() => <AutomationAgentField />}
+              </form.AppField>
+            </FormSection>
+            <FormSection
+              title="Instructions"
+              description="The agent gets them after the instructions of the project."
+            >
+              <form.AppField name="instructions">
+                {(field) => (
+                  <field.MarkdownField
+                    label="Instructions"
+                    readOnly={readOnly}
+                    className="min-h-64"
+                  />
+                )}
               </form.AppField>
             </FormSection>
             <FormSection

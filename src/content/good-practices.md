@@ -26,7 +26,7 @@ The instructions of the agent name the skills to run, and add only what depends 
 
 Write the result that you expect, not the procedure. The agent then chooses its tools. A persona, such as "You are the production housekeeper", does not change the behavior. Leave it out.
 
-Put the facts of a project, such as the name of its service in the observability tool, in the instructions of the project. An agent can then work on several projects.
+Put the facts of a project, such as the name of its service in the observability tool, in the instructions of the project. An agent can then work on several projects. Put what changes between the automations of one agent, such as the repository to work on, in the instructions of the automation.
 
 ## Restrict with capabilities
 

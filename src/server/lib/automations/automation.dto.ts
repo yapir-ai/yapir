@@ -41,6 +41,13 @@ export const capabilitiesSchema = z
     "Capabilities beyond those the triggers' events grant. A capability a trigger grants is listed only to unscope it"
   );
 
+export const AutomationInstructionsSchema = z
+  .string()
+  .trim()
+  .describe(
+    "Markdown that the agent receives after the instructions of its project, such as the repository to work on"
+  );
+
 export const toResponseDto = (automation: AutomationSelect) => ({
   id: automation.id,
   deletedAt: automation.deletedAt,
@@ -49,6 +56,7 @@ export const toResponseDto = (automation: AutomationSelect) => ({
   agentId: automation.agentId,
   projectId: automation.projectId,
   ciRepositoryId: automation.ciRepositoryId,
+  instructions: automation.instructions,
   triggers: automation.triggers,
   capabilities: automation.capabilities,
   dispatcher: automation.dispatcher,

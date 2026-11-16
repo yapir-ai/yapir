@@ -26,6 +26,7 @@ async function insertQueuedTask(
     agentId: agent.id,
     projectId: project.id,
     dispatcher: "local",
+    instructions: "Work on the back-end repository only.",
   });
 
   const executionId = "01960000-0000-7000-8000-000000000702";
@@ -49,7 +50,7 @@ async function insertQueuedTask(
     ...override.execution,
   });
 
-  return { agent, project, task, execution };
+  return { agent, automation, project, task, execution };
 }
 
 test("a runner claims its queued execution and receives the work", async ({
@@ -58,7 +59,8 @@ test("a runner claims its queued execution and receives the work", async ({
   insert,
   clock,
 }) => {
-  const { agent, project, task, execution } = await insertQueuedTask(insert);
+  const { agent, automation, project, task, execution } =
+    await insertQueuedTask(insert);
 
   const response = await request.post("/api/runner/claim", {
     data: { executionId: execution.id, claimId },
@@ -70,7 +72,10 @@ test("a runner claims its queued execution and receives the work", async ({
     taskId: task.id,
     automation: expect.objectContaining({
       harness: agent.harness,
-      instructions: agent.prompt,
+      instructions: {
+        agent: agent.prompt,
+        automation: automation.instructions,
+      },
       skills: [],
     }),
     allowedHosts: null,

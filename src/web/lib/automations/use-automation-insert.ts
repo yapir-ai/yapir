@@ -31,6 +31,7 @@ export function useAutomationInsert(projectId: string) {
         projectId,
         enabled: false,
         deletedAt: null,
+        instructions: "",
         triggers: [],
         capabilities: [],
         ...executionEnvironment(

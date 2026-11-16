@@ -15,7 +15,7 @@ export interface HarnessInput {
   taskId: string;
   model: Automation["model"];
   mcpUrl: string;
-  // Yapir's instructions, then the agent's and the project's.
+  // Yapir's instructions, then the agent's, the project's and the automation's.
   instructions: string;
   repositoryDirectories: string[];
   // Receives each prompt once the harness took it, and the parts of each agent message once the harness completed it.

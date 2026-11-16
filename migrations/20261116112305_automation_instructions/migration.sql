@@ -1,0 +1,1 @@
+ALTER TABLE "automation" ADD COLUMN "instructions" text DEFAULT '' NOT NULL;

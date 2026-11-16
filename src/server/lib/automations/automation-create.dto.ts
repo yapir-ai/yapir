@@ -2,6 +2,7 @@ import { DispatcherNameSchema } from "@server/lib/executions/dispatcher.dto";
 import { z } from "zod";
 
 import {
+  AutomationInstructionsSchema,
   capabilitiesSchema,
   ciRepositoryIdSchema,
   triggersSchema,
@@ -19,6 +20,7 @@ export const AutomationCreateRequest = z.strictObject({
     .describe(
       "The repository of the project whose CI runs the executions. Defaults to the project's CI repository"
     ),
+  instructions: AutomationInstructionsSchema.default(""),
   triggers: triggersSchema
     .optional()
     .describe(

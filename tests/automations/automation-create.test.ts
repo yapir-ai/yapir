@@ -43,6 +43,7 @@ test("creates a disabled automation that runs in the GitHub Actions of the proje
     agentId: reviewer.id,
     projectId: project.id,
     ciRepositoryId: repository.id,
+    instructions: "",
     triggers: [],
     capabilities: [],
     dispatcher: "github-actions",
