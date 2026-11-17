@@ -102,7 +102,7 @@ export async function renewLease(
     .where(eq(executionTable.id, attempt.id));
 }
 
-type End =
+export type End =
   | { outcome: "succeeded" }
   | { outcome: "failed"; error: string }
   | { outcome: "stopped"; stoppedById: string };

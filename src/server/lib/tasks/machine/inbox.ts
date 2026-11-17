@@ -8,28 +8,35 @@ import type { LockedTask } from "./command";
 
 type Attempt = Pick<ExecutionSelect, "id" | "taskId">;
 
+export async function hasEvent(
+  tx: Transaction,
+  task: Pick<LockedTask, "id">,
+  event: Pick<PreparedEvent, "id">
+) {
+  const received = await tx.query.taskEventTable.findFirst({
+    columns: { eventId: true },
+    where: { taskId: task.id, eventId: event.id },
+  });
+
+  return received !== undefined;
+}
+
 export async function receiveEvent(
   tx: Transaction,
   task: Pick<LockedTask, "id">,
   event: PreparedEvent,
   now: Date
 ) {
-  const received = await tx
-    .insert(taskEventTable)
-    .values({
-      taskId: task.id,
-      eventId: event.id,
-      receivedAt: now,
-      notification: {
-        type: event.type,
-        data: event.data,
-        author: event.author,
-      },
-    })
-    .onConflictDoNothing()
-    .returning({ eventId: taskEventTable.eventId });
-
-  return received.length > 0;
+  await tx.insert(taskEventTable).values({
+    taskId: task.id,
+    eventId: event.id,
+    receivedAt: now,
+    notification: {
+      type: event.type,
+      data: event.data,
+      author: event.author,
+    },
+  });
 }
 
 export async function deliverPendingEvents(tx: Transaction, attempt: Attempt) {
@@ -73,6 +80,18 @@ export async function hasPendingEvents(
   });
 
   return pending !== undefined;
+}
+
+export async function hasUnacknowledgedEvents(
+  tx: Transaction,
+  task: Pick<LockedTask, "id">
+) {
+  const unacknowledged = await tx.query.taskEventTable.findFirst({
+    columns: { eventId: true },
+    where: { taskId: task.id, state: { ne: "acknowledged" } },
+  });
+
+  return unacknowledged !== undefined;
 }
 
 const turnEvents = (attempt: Attempt) =>

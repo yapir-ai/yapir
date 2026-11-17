@@ -8,139 +8,128 @@ import {
   taskTable,
 } from "@server/lib/db/schema";
 import type { ExecutionSelect } from "@server/lib/db/schema";
+import type { ApiEnv } from "@server/lib/env";
 import { notFound } from "@server/lib/errors/error.factory";
-import type { EventResource } from "@server/lib/events/event-definition";
+import type {
+  EventNotificationData,
+  EventResource,
+} from "@server/lib/events/event-definition";
 import { eq } from "drizzle-orm";
+import { isUnhandled, transition } from "xstate";
 
-import type { ActiveTaskState, RestingTaskState, TaskState } from "../task.dto";
+import { activeTaskStates } from "../task.dto";
+import type { TaskState } from "../task.dto";
 import type { TaskService } from "../task.service";
+import type { TaskLifecycleEvent } from "../task.statechart";
+import { transactionalLifecycle } from "./actions";
 import type { Effect } from "./effects";
 
-type Target =
+export type Target =
   | { taskId: string }
   | Pick<ExecutionSelect, "id" | "taskId">
   | { automationId: string; resources: EventResource[] };
 
-export const unchanged = Symbol("unchanged");
-
-interface Change {
-  consecutiveFailures?: number;
-  effects?: Effect[];
-}
-
-export type Transition<To extends TaskState> =
-  | ({ to: To & RestingTaskState; attempt?: undefined } & Change)
-  | ({
-      to: To & ActiveTaskState;
-      attempt: Pick<ExecutionSelect, "id">;
-    } & Change);
-
-export interface LockedTask<From extends TaskState = TaskState> {
+export interface LockedTask {
   id: string;
   automationId: string;
   projectId: string;
-  state: From;
+  state: TaskState;
   consecutiveFailures: number;
-  attempt: From extends ActiveTaskState
-    ? ExecutionSelect
-    : ExecutionSelect | null;
+  attempt: ExecutionSelect | null;
 }
 
-export interface Context<From extends TaskState> {
-  tx: Transaction;
-  now: Date;
-  task: LockedTask<From>;
-}
+type Awaitable<T> = T | Promise<T>;
 
-interface Declaration<
-  From extends TaskState,
-  To extends TaskState,
-  Input,
-  Result extends Transition<To>,
-> {
-  from: readonly From[];
-  to: readonly To[];
-  access?: ProjectAccess;
-  run: (
-    context: Context<From>,
-    input: Input
-  ) => Promise<Result | typeof unchanged>;
-}
-
-type Applied<From extends TaskState, Result> =
-  | (Result & { task: LockedTask<From> })
-  | { to?: undefined; task: LockedTask };
+type Applied =
+  | { task: LockedTask; to: TaskState; events: EventNotificationData[] }
+  | { task: LockedTask; to?: undefined };
 
 export function taskCommands({
   db,
   clock,
+  env,
   currentUser,
   taskService,
   effects,
 }: {
   db: Db;
   clock: Clock;
+  env: ApiEnv;
   currentUser: CurrentUser;
   taskService: TaskService;
   effects: (effects: Effect[]) => void;
 }) {
-  return function command<
-    const From extends TaskState,
-    const To extends TaskState,
-    Input,
-    Result extends Transition<To>,
-  >({ from, access, run }: Declaration<From, To, Input, Result>) {
-    return async (
-      target: Target,
-      input: Input
-    ): Promise<Applied<From, Result>> => {
-      const { now } = clock;
-      let afterCommit: Effect[] = [];
+  return async function send(
+    target: Target,
+    prepare: (context: {
+      tx: Transaction;
+      task: LockedTask;
+    }) => Awaitable<TaskLifecycleEvent | undefined>,
+    access?: ProjectAccess
+  ): Promise<Applied> {
+    const { now } = clock;
+    let afterCommit: Effect[] = [];
 
-      const applied = await db.transaction(
-        async (tx): Promise<Applied<From, Result>> => {
-          const task = await lockTask(tx, target, now);
+    const applied = await db.transaction(async (tx): Promise<Applied> => {
+      const task = await lockTask(tx, target, now);
 
-          if (
-            !task ||
-            (access &&
-              !(await currentUser.hasProjectAccess(access, task.projectId)))
-          ) {
-            throw notFound("TASK_NOT_FOUND");
-          }
+      if (
+        !task ||
+        (access &&
+          !(await currentUser.hasProjectAccess(access, task.projectId)))
+      ) {
+        throw notFound("TASK_NOT_FOUND");
+      }
 
-          if (!isFrom(from, task) || !holdsActiveAttempt(target, task)) {
-            return { task };
-          }
+      const event =
+        holdsActiveAttempt(target, task) && (await prepare({ tx, task }));
 
-          const transition = await run({ tx, now, task }, input);
+      if (!event) {
+        return { task };
+      }
 
-          if (transition === unchanged) {
-            return { task };
-          }
+      const { machine, outcome } = transactionalLifecycle({
+        tx,
+        now,
+        task,
+        env,
+      });
 
-          const previous: TaskState = task.state;
+      const snapshot = machine.resolveState({
+        value: task.state,
+        context: { consecutiveFailures: task.consecutiveFailures },
+      });
 
-          await tx
-            .update(taskTable)
-            .set({
-              state: transition.to,
-              activeExecutionId: transition.attempt?.id ?? null,
-              consecutiveFailures: transition.consecutiveFailures,
-              ...(transition.to !== previous && { stateChangedAt: now }),
-            })
-            .where(eq(taskTable.id, task.id));
+      const result = transition(machine, snapshot, event);
 
-          afterCommit = transition.effects ?? [];
+      if (isUnhandled(snapshot, result)) {
+        return { task };
+      }
 
-          return { ...transition, task };
-        }
-      );
+      const [next, writes] = result;
 
-      effects(afterCommit);
+      for (const write of writes) {
+        await write.exec();
+      }
 
-      return applied;
-    };
+      await tx
+        .update(taskTable)
+        .set({
+          state: next.value,
+          activeExecutionId: isActive(next.value) ? outcome.attempt!.id : null,
+          consecutiveFailures: next.context.consecutiveFailures,
+          ...(next.value !== task.state && { stateChangedAt: now }),
+        })
+        .where(eq(taskTable.id, task.id));
+
+      ({ afterCommit } = outcome);
+
+      return { task, to: next.value, events: outcome.events };
+    });
+
+    effects(afterCommit);
+
+    return applied;
   };
 
   async function lockTask(tx: Transaction, target: Target, now: Date) {
@@ -184,12 +173,8 @@ export function taskCommands({
   }
 }
 
-function isFrom<From extends TaskState>(
-  from: readonly From[],
-  task: LockedTask
-): task is LockedTask<From> {
-  return from.some((state) => state === task.state);
-}
+const isActive = (state: TaskState) =>
+  activeTaskStates.some((active) => active === state);
 
 const holdsActiveAttempt = (target: Target, task: LockedTask) =>
   !("id" in target) || target.id === task.attempt?.id;
