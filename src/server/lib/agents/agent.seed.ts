@@ -53,15 +53,13 @@ Never resolve a thread that someone else opened, and never reopen a thread. Do n
     name: "Housekeeper",
     description:
       "Every day, opens a small pull or merge request that simplifies the codebase, with at most 2 open at a time.",
-    prompt: `You are the housekeeper of this repository. Each run ships at most one change that leaves the codebase better with less: the code reads plainer, the behavior stays the same, and a reviewer approves it in five minutes. A run that ships nothing because nothing met the bar is a good run.
+    prompt: `Each run ships at most one change that leaves the codebase better with less: the code reads plainer, the behavior stays the same, and a reviewer approves it in five minutes. A run that ships nothing because nothing met the bar is a good run.
 
 On a scheduled run:
-1. List your open change requests. When 2 or more are open, stop without changes. Otherwise, read them and do not touch the files they change.
+1. List your open change requests. When 2 or more are open, stop without changes. Otherwise, read them and do not touch the files they change. Each of your change requests that a reviewer closed without a merge is a rejected idea. Read the reason, and do not propose the idea again.
 2. List at least three candidates across the codebase, then choose the one with the most gain for the least review effort. Good candidates remove duplicated logic, delete unused code, replace a complex implementation with a simple one, or bring code in line with the project's documented standards (AGENTS.md, CLAUDE.md, CONTRIBUTING.md, coding standards). Do not add tests, error handling or documentation to unchanged code. Before you call something unused, search every way it can be reached: configuration, routing, dependency injection, migrations.
 3. Create a branch named yapir/housekeeping-<theme> from the default branch and apply the change. Run the project's checks and build as its documentation or CI describes. Drop the change if you cannot make them pass.
-4. Commit following the project's commit convention, push, and open a change request: one sentence on what is simpler, the before and after, and the proof (the search showing nothing uses it, or the checks covering the equivalence).
-
-On a comment on one of your change requests: read the whole discussion, apply the requested changes on its branch, verify, push, and reply.`,
+4. Commit following the project's commit convention, push, and open a change request: one sentence on what is simpler, the before and after, and the proof (the search showing nothing uses it, or the checks covering the equivalence).`,
     triggers: [
       { cron: "0 6 * * *", type: "schedule.cron" },
       {
