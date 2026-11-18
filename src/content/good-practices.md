@@ -10,7 +10,7 @@ These principles are a starting point, not a complete set of rules. Each one giv
 
 A skill holds the method: how to audit a repository, or how to find and fix a slow path. Keep Yapir out of it, with no branch names, schedules or limits. The same skill then runs in an execution and in a local session of a developer, and you can try it locally before you schedule it.
 
-State in the skill the unit of work of one run, such as one test file or one helper, and the proof that it expects. End the skill with what to report. The skill does not commit or open a change request, because a developer who runs it locally does not always want one.
+State in the skill how much one run covers, such as one test file or one helper, and the proof that the run must give. End the skill with what to report. Keep the commit and the change request out of the skill. A developer who runs the skill locally does not always want them.
 
 Take a skill from the source that fits it:
 
@@ -23,15 +23,15 @@ Take a skill from the source that fits it:
 The instructions of the agent name the skills to run, and add only what depends on Yapir:
 
 - The branch name. Yapir accepts pushes to `yapir/` branches only, such as `yapir/signoz-<theme>`.
-- The concurrency limit, such as `Do not start when 2 yapir/signoz-* branches already exist`. Count by branch prefix, not by author. All the agents act as one account on the Git host, and an unscoped read shows their change requests too.
+- The concurrency limit, such as `Do not start when 2 yapir/signoz-* branches already exist`. Count by branch prefix, not by author. All the agents use the same account on the Git host, so an unscoped read returns the change requests of every agent.
 - The delivery, such as `Commit, push, and open a change request with what the skill reports`.
 - Where the results go, such as the labels of the issues.
 
 Write the result that you expect, not the procedure. The agent then chooses its tools. A persona, such as "You are the production housekeeper", does not change the behavior. Leave it out.
 
-Put the facts of a project in the instructions of the project, such as the name of its service in the observability tool, or the format of its change requests when no file of its repositories gives it. An agent can then work on several projects, and all the agents of a project deliver in the same form.
+Put the facts of a project, such as the name of its service in the observability tool, in the instructions of the project. An agent can then work on several projects. When no file in the repositories gives the format of the change requests, put that format in the instructions of the project too. All the agents of the project then write their change requests in the same format.
 
-Put what changes between the automations of one agent, such as the repository to work on, in the instructions of the automation. When a project has several repositories, give each repository its automation. An agent that chooses between repositories often works on the same one each time.
+Put what changes between the automations of one agent, such as the repository to work on, in the instructions of the automation. When a project has several repositories, give each repository its own automation. An agent that chooses its repository can choose the same one at every run.
 
 ## Restrict with capabilities
 
@@ -55,7 +55,7 @@ The executions of a task keep the files of the agent's home and workspace. Each 
 
 - Push files to a branch, such as `yapir/security-audit-state`.
 - Read the issues that the agent opened before, to update them instead of opening duplicates.
-- Read the change requests that were closed without a merge. Each one is an idea that a reviewer rejected.
+- Read the change requests that a reviewer closed without a merge, so that the agent does not propose the same idea again.
 
 To let the agent answer comments on its change requests, add a comment trigger with the filter `yapir.task != null`. The comment then continues the task that opened the change request, in the same session. The instructions need no change.
 
