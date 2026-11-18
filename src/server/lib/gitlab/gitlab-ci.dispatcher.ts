@@ -1,4 +1,4 @@
-import type { Gitlab, Sudo } from "@gitbeaker/rest";
+import type { Gitlab } from "@gitbeaker/rest";
 import type { ApiEnv } from "@server/lib/env";
 import type {
   Dispatcher,
@@ -34,7 +34,7 @@ export function gitlabCiDispatcher({
       default_branch,
       // SAFETY: gitbeaker sends these options as the request body, but does not type them.
       // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      { inputs } as Sudo
+      { inputs }
     );
   }
 

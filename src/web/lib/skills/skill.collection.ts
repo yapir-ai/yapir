@@ -43,8 +43,6 @@ export const skillsCollection = collection("skills", {
         toast.success("Skill created");
       })
     );
-
-    return { refetch: false };
   },
   onUpdate: async ({ transaction, collection: skills }) => {
     await Promise.all(
@@ -64,7 +62,5 @@ export const skillsCollection = collection("skills", {
         });
       })
     );
-
-    return { refetch: false };
   },
 });

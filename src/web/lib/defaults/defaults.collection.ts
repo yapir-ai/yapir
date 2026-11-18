@@ -36,8 +36,6 @@ export const defaultsCollection = collection(
           toast.success("Defaults updated");
         })
       );
-
-      return { refetch: false };
     },
   })
 );

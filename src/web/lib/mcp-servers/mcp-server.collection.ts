@@ -53,8 +53,6 @@ export const mcpServersCollection = collection(
         })
       );
       await invalidateCapabilities(dbClient);
-
-      return { refetch: false };
     },
     onUpdate: async ({ transaction, collection: mcpServers }) => {
       await Promise.all(
@@ -72,8 +70,6 @@ export const mcpServersCollection = collection(
         })
       );
       await invalidateCapabilities(dbClient);
-
-      return { refetch: false };
     },
   })
 );

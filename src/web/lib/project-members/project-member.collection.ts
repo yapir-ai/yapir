@@ -40,8 +40,6 @@ export function projectMembersCollection(projectId: string) {
           toast.success("Member added");
         })
       );
-
-      return { refetch: false };
     },
     onUpdate: async ({ transaction, collection: members }) => {
       await Promise.all(
@@ -57,8 +55,6 @@ export function projectMembersCollection(projectId: string) {
           toast.success("Member role updated");
         })
       );
-
-      return { refetch: false };
     },
     onDelete: async ({ transaction, collection: members }) => {
       await Promise.all(
@@ -72,8 +68,6 @@ export function projectMembersCollection(projectId: string) {
           toast.success("Member removed");
         })
       );
-
-      return { refetch: false };
     },
   });
 }

@@ -55,8 +55,6 @@ export const agentsCollection = collection("agents", {
         toast.success("Agent created");
       })
     );
-
-    return { refetch: false };
   },
   onUpdate: async ({ transaction, collection: agents }) => {
     await Promise.all(
@@ -102,7 +100,5 @@ export const agentsCollection = collection("agents", {
         });
       })
     );
-
-    return { refetch: false };
   },
 });

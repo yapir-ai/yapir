@@ -29,7 +29,7 @@ Each instance serves its API reference at `/api/docs`. The CLI, `@yapir-ai/cli` 
 
 ## Development
 
-Requires Bun 1.4.3+, Node.js 24+ and Docker.
+Requires Bun 1.4.4+, Node.js 24+ and Docker.
 
 ```sh
 cp .env.example .env         # then set its values

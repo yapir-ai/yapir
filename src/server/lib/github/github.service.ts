@@ -18,9 +18,10 @@ export function githubService(
   async function installationToken() {
     const auth = createAppAuth({
       appId: connection.appId,
-      privateKey: createPrivateKey(connection.privateKey)
-        .export({ format: "pem", type: "pkcs8" })
-        .toString(),
+      privateKey: createPrivateKey(connection.privateKey).export({
+        format: "pem",
+        type: "pkcs8",
+      }),
       installationId: connection.installationId,
       request: new Octokit({ baseUrl }).request,
     });

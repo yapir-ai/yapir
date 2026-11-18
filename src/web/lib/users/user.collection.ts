@@ -37,7 +37,5 @@ export const usersCollection = collection("users", {
         toast.success("User role updated");
       })
     );
-
-    return { refetch: false };
   },
 });

@@ -148,7 +148,11 @@ export function MetricsChart<T extends MetricsGroupRow>({
         <ChartTooltip
           content={
             <ChartTooltipContent
-              labelFormatter={(date) => dateLabel(String(date))}
+              labelFormatter={(date) =>
+                // SAFETY: the x axis plots the string dates of the chart data.
+                // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+                dateLabel(date as string)
+              }
               valueFormatter={format}
             />
           }
