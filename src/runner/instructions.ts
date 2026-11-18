@@ -9,14 +9,17 @@ When your instructions name another way to do something, use the equivalent yapi
 const networkPolicyInstructions = `Yapir's network policy limits the hosts that you can reach. A refused request gets a 403 response with the X-Yapir-Network-Policy: denied header, or a TLS error in a container.
 Do not look for another way to reach a refused host: report the host in your answer.`;
 
+const dockerInstructions = `Docker is available, with Docker Compose and Testcontainers.`;
+
 export const agentInstructions = (
   instructions: Automation["instructions"],
   project: Project,
-  networkPolicy: boolean
+  { networkPolicy, docker }: { networkPolicy: boolean; docker: boolean }
 ) =>
   [
     runnerInstructions,
     networkPolicy && networkPolicyInstructions,
+    docker && dockerInstructions,
     instructions.agent,
     project.instructions,
     instructions.automation,

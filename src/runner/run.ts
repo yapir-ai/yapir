@@ -72,7 +72,14 @@ async function runExecution({ dockerDataRoot }: RunOptions) {
     }
 
     const agent = startAgent(
-      { proxyUrl: proxy.url.href, taskId, automation, project, networkPolicy },
+      {
+        proxyUrl: proxy.url.href,
+        taskId,
+        automation,
+        project,
+        networkPolicy,
+        docker: dockerDataRoot !== undefined,
+      },
       agentEnvironment
     );
 
