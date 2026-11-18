@@ -105,7 +105,7 @@
     "oxlint-tsgolint": "^7.0.2004",
     "typescript": "~7.0.2",
     "ultracite": "8.0.1",
-    "vite": "^8.3.5",
+    "vite": "^8.3.8",
     "wrangler": "^4.151.3"
   }
 }
