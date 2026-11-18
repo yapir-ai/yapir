@@ -1,5 +1,5 @@
 # The instance as a Bun process. Build the client before the image: bunx vite build.
-FROM oven/bun:1.4.3
+FROM oven/bun:1.4.4
 
 WORKDIR /yapir
 COPY package.json bun.lock ./

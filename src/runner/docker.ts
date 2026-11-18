@@ -45,11 +45,10 @@ export async function startDocker(dataRoot: string) {
     "The Docker daemon",
     daemon,
     async () =>
-      await fetch("http://docker/_ping", { unix: socket }).then(
-        (ping) => ping.ok,
+      await fetch("http://docker/_ping", { unix: socket })
+        .then((ping) => ping.ok)
         // The socket is missing until the daemon listens.
-        () => false
-      )
+        .catch(() => false)
   );
 
   return daemon;

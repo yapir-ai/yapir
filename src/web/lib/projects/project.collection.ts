@@ -44,8 +44,6 @@ export const projectsCollection = collection(
           toast.success("Project created");
         })
       );
-
-      return { refetch: false };
     },
   },
   (dbClient) => ({
@@ -79,8 +77,6 @@ export const projectsCollection = collection(
           }
         })
       );
-
-      return { refetch: false };
     },
   })
 );

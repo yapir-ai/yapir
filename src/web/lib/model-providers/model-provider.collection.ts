@@ -46,8 +46,6 @@ export const modelProvidersCollection = collection("model-providers", {
         toast.success("Model provider created");
       })
     );
-
-    return { refetch: false };
   },
   onUpdate: async ({ transaction, collection: modelProviders }) => {
     await Promise.all(
@@ -64,8 +62,6 @@ export const modelProvidersCollection = collection("model-providers", {
         });
       })
     );
-
-    return { refetch: false };
   },
 });
 

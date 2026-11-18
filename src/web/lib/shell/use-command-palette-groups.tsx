@@ -138,8 +138,8 @@ export function useCommandPaletteGroups(): CommandPaletteGroup[] {
 }
 
 function useAutomations(projectIds: string[]) {
-  const { data } = useLiveQuery(
-    (q) => {
+  const { data } = useLiveQuery({
+    query: (q) => {
       const [first, ...rest] = projectIds.map((projectId) =>
         q
           .from({ [projectId]: automationsCollection(projectId) })
@@ -148,8 +148,7 @@ function useAutomations(projectIds: string[]) {
 
       return first && q.unionAll(first, ...rest);
     },
-    [projectIds.join(",")]
-  );
+  });
 
   return (data ?? []).filter(({ deletedAt }) => deletedAt === null);
 }
@@ -161,13 +160,12 @@ function useActions(projectId: string | undefined): CommandPaletteItem[] {
   const user = useSessionUser();
   const isAdmin = isOrganizationAdmin(user);
 
-  const { data: member } = useLiveQuery(
-    (q) =>
+  const { data: member } = useLiveQuery({
+    query: (q) =>
       projectId
         ? projectMemberInfoQuery(projectId, user.id).query(q)
         : undefined,
-    [projectId, user.id]
-  );
+  });
 
   const dark = document.documentElement.classList.contains("dark");
 

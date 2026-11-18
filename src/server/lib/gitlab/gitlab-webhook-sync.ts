@@ -42,6 +42,7 @@ export function gitlabWebhookSync(
       minAccessLevel: AccessLevel.MAINTAINER,
       archived: false,
       simple: true,
+      pagination: "offset",
       perPage: 100,
     });
 

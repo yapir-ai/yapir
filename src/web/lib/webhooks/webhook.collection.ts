@@ -55,8 +55,6 @@ export const webhooksCollection = collection(
         })
       );
       await invalidateEventCatalog(dbClient);
-
-      return { refetch: false };
     },
     onUpdate: async ({ transaction, collection: webhooks }) => {
       await Promise.all(
@@ -74,8 +72,6 @@ export const webhooksCollection = collection(
         })
       );
       await invalidateEventCatalog(dbClient);
-
-      return { refetch: false };
     },
   })
 );
