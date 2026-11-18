@@ -22,6 +22,7 @@ interface AgentInput {
   automation: Automation;
   project: Project;
   networkPolicy: boolean;
+  docker: boolean;
 }
 
 export async function prepareAgentDirectories() {
@@ -163,7 +164,7 @@ async function runTurns(
 
 async function openSession(
   server: ReturnType<typeof agentClient>,
-  { proxyUrl, taskId, automation, project, networkPolicy }: AgentInput
+  { proxyUrl, taskId, automation, project, networkPolicy, docker }: AgentInput
 ) {
   await prepareRepositories(
     project,
@@ -178,11 +179,10 @@ async function openSession(
     taskId,
     model: proxiedModel(automation.model, proxyUrl),
     mcpUrl: server.mcpUrl,
-    instructions: agentInstructions(
-      automation.instructions,
-      project,
-      networkPolicy
-    ),
+    instructions: agentInstructions(automation.instructions, project, {
+      networkPolicy,
+      docker,
+    }),
     repositoryDirectories: project.repositories.map(repositoryDirectory),
     record: server.record,
   });
