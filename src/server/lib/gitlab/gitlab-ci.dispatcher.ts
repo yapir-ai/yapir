@@ -29,13 +29,9 @@ export function gitlabCiDispatcher({
       server_url: payload.serverUrl,
     };
 
-    await gitlab.Pipelines.create(
-      ciRepository!.path,
-      default_branch,
-      // SAFETY: gitbeaker sends these options as the request body, but does not type them.
-      // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-      { inputs }
-    );
+    await gitlab.Pipelines.create(ciRepository!.path, default_branch, {
+      inputs,
+    });
   }
 
   async function authenticate(
