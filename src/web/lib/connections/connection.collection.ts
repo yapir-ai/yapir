@@ -41,8 +41,6 @@ export const connectionsCollection = collection("connections", {
         toast.success("Connection created");
       })
     );
-
-    return { refetch: false };
   },
   onDelete: async ({ transaction, collection: connections }) => {
     await Promise.all(
@@ -54,8 +52,6 @@ export const connectionsCollection = collection("connections", {
         toast.success("Connection deleted");
       })
     );
-
-    return { refetch: false };
   },
 });
 

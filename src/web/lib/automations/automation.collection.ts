@@ -114,8 +114,6 @@ export function automationsCollection(projectId: string) {
             });
           })
         );
-
-        return { refetch: false };
       },
       onInsert: async ({ transaction, collection: automations }) => {
         await Promise.all(
@@ -132,8 +130,6 @@ export function automationsCollection(projectId: string) {
             toast.success("Automation created");
           })
         );
-
-        return { refetch: false };
       },
     })
   );

@@ -1,4 +1,4 @@
-import { formatForDisplay } from "@tanstack/react-hotkeys";
+import { useFormatForDisplay } from "@tanstack/react-hotkeys";
 import {
   InputGroup,
   InputGroupAddon,
@@ -25,6 +25,7 @@ export function MessageComposer({
   onStop?: () => Promise<void>;
 }) {
   const [text, setText] = useState("");
+  const formatForDisplay = useFormatForDisplay();
 
   return (
     <form

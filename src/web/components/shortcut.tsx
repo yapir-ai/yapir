@@ -1,8 +1,9 @@
-import { formatForDisplay, isHotkeySequence } from "@tanstack/react-hotkeys";
+import { isHotkeySequence, useFormatForDisplay } from "@tanstack/react-hotkeys";
 import type { AppHotkey } from "@tanstack/react-hotkeys";
 import { Kbd, KbdGroup } from "@web/components/ui/kbd";
 
 export function Shortcut({ appHotkey }: { appHotkey: AppHotkey }) {
+  const formatForDisplay = useFormatForDisplay();
   const { hotkey } = appHotkey;
 
   if (!hotkey) {

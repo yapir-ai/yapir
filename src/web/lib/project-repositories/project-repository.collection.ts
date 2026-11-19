@@ -44,8 +44,6 @@ export function projectRepositoriesCollection(projectId: string) {
           })
         );
         await invalidateProjects(dbClient);
-
-        return { refetch: false };
       },
       onDelete: async ({ transaction, collection: links }) => {
         await Promise.all(
@@ -60,8 +58,6 @@ export function projectRepositoriesCollection(projectId: string) {
           })
         );
         await invalidateProjects(dbClient);
-
-        return { refetch: false };
       },
     })
   );

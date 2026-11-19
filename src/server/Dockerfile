@@ -1,4 +1,4 @@
-FROM oven/bun:1.4.3 AS runner
+FROM oven/bun:1.4.4 AS runner
 
 WORKDIR /yapir
 COPY package.json bun.lock ./
@@ -8,7 +8,7 @@ COPY src/server src/server
 COPY src/runner src/runner
 RUN bun build src/runner/main.ts --compile --outfile=/yapir-runner
 
-FROM oven/bun:1.4.3 AS opencode
+FROM oven/bun:1.4.4 AS opencode
 
 WORKDIR /opencode
 RUN bun add @opencode/cli-linux-x64@2.1.2

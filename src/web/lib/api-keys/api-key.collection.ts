@@ -19,7 +19,5 @@ export const apiKeysCollection = collection("api-keys", {
         toast.success("API key deleted");
       })
     );
-
-    return { refetch: false };
   },
 });

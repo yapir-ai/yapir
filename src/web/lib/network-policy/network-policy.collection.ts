@@ -26,7 +26,5 @@ export const networkPolicyCollection = collection("network-policy", {
         toast.success("Network policy updated");
       })
     );
-
-    return { refetch: false };
   },
 });
