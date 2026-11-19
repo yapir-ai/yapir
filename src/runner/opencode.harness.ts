@@ -1,6 +1,4 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import { homedir } from "node:os";
 import path from "node:path";
 
 import { isSessionNotFoundError, OpenCode } from "@opencode/client";
@@ -19,12 +17,6 @@ const skillDirectories = [
   ".agents/skills",
 ];
 
-// OpenCode appends the content of this file to its system prompt.
-const instructionsFile = path.join(
-  homedir(),
-  ".yapir/opencode-instructions.md"
-);
-
 export const opencodeHarness: Harness = {
   skillsDirectory: ".agents/skills",
   async open({
@@ -35,15 +27,9 @@ export const opencodeHarness: Harness = {
     repositoryDirectories,
     record,
   }) {
-    await mkdir(path.dirname(instructionsFile), { recursive: true });
-    await writeFile(instructionsFile, instructions);
-
     const endpoint = await Service.ensure({
       env: {
         OPENCODE_CONFIG_CONTENT: JSON.stringify({
-          // Sessions of earlier executions name this agent: OpenCode fails to resume them without it.
-          agents: { yapir: {} },
-          instructions: [instructionsFile],
           // OpenCode searches skills from its working directory upwards: the repositories' are below it.
           skills: repositoryDirectories.flatMap((directory) =>
             skillDirectories.map((skills) => path.join(directory, skills))
@@ -107,6 +93,12 @@ export const opencodeHarness: Harness = {
         permissions: [{ action: "*", resource: "*", effect: "allow" }],
       });
     }
+
+    await client.experimental.session.instructions.entry.put({
+      sessionID,
+      key: "yapir",
+      value: instructions,
+    });
 
     // OpenCode's stats count the messages created since then: the execution's, subagents included.
     const openedAt = Date.now();
