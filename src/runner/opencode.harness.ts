@@ -110,6 +110,14 @@ export const opencodeHarness: Harness = {
     // The first event confirms the subscription, before the first prompt.
     await events.next();
 
+    async function backgroundCommandRuns() {
+      const { data } = await client.shell.list({
+        location: { directory: workspaceDirectory },
+      });
+
+      return data.some(({ status }) => status === "running");
+    }
+
     async function follow(): Promise<never> {
       for (
         let next = await events.next();
@@ -134,7 +142,9 @@ export const opencodeHarness: Harness = {
             record("user", [{ type: "text", text }]);
           }
         } else if (event.type === "session.execution.succeeded") {
-          inbox.turnEnded();
+          if (!(await backgroundCommandRuns())) {
+            inbox.turnEnded();
+          }
         } else if (event.type === "session.execution.failed") {
           throw new Error(`OpenCode turn failed: ${event.data.error.message}`);
         } else if (event.type === "session.execution.interrupted") {
