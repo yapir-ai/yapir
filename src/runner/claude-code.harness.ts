@@ -97,12 +97,20 @@ export const claudeCodeHarness: Harness = {
 
     async function follow(): Promise<never> {
       const transcript = claudeCodeTranscript(record);
+      let backgroundTaskRuns = false;
 
       for await (const message of messages) {
         transcript(message);
 
         if (message.type === "stream_event") {
           countTokens(message);
+        }
+
+        if (
+          message.type === "system" &&
+          message.subtype === "background_tasks_changed"
+        ) {
+          backgroundTaskRuns = message.tasks.length > 0;
         }
 
         if (
@@ -126,7 +134,10 @@ export const claudeCodeHarness: Harness = {
           await writeFile(usageFile, JSON.stringify(message.modelUsage));
           sessionUsage = message.modelUsage;
           turnUsage = [];
-          inbox.turnEnded();
+
+          if (!backgroundTaskRuns) {
+            inbox.turnEnded();
+          }
         }
       }
 
