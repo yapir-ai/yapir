@@ -21,10 +21,10 @@ This folder is the maintained source for the verification of the user-facing beh
 
 - Start each recipe from the baseline, plus the preconditions of the recipe.
 - The recipes use the shell variables `R=<instance ID>` and `C="bun instance cli $R"`. Set them first.
-- A `snapshot` right after a `goto` can show an empty page while it loads. Snapshot again until the page shows its content.
+- A `snapshot` right after a `goto` can show an empty page while it loads. Snapshot again until the page shows its content. If execution containers start or stop during a `goto`, Chromium can abort module fetches with `net::ERR_NETWORK_CHANGED` and show a blank page: run `bun instance browser $R reload`, then snapshot again.
 - Target elements by ARIA role and accessible name: `role=<role>[name="<name>"]`.
 - Comboboxes open on a click. Type to filter the options, then click the option.
-- Leave a form with its **Cancel** link or its submit button. A `goto` from an edited form opens a `beforeunload` dialog: run `bun instance browser $R dialog-accept`.
+- Leave an edited form with its submit button, or click **Cancel** and then **Discard changes** in the `Discard unsaved changes?` dialog. A `goto` from an edited form opens a `beforeunload` dialog: run `bun instance browser $R dialog-accept`.
 - Read IDs from the URL that a click prints (`Page URL`) or from the CLI output.
 
 ## Proof and skip reporting
@@ -46,12 +46,12 @@ Each feature file starts with an H1 title and one paragraph on the user-visible 
 ## Features
 
 - [Projects](./projects.md): create, edit, delete and restore a project, from the UI and the CLI.
-- [Model providers](./model-providers.md): add a model provider from the catalog.
-- [Agents](./agents.md): create an agent with a harness, a model provider and a model.
-- [Automations](./automations.md): create an automation of an agent in a project. It needs a repository.
-- [Executions](./executions.md): start an automation manually, with each harness, and continue its Task. It needs the seed.
-- [Events](./events.md): Git host deliveries and cron ticks start and continue Tasks. It needs the seed.
-- [Connections](./connections.md): the Git host Connections, their calls to the Git host, their webhook and their repositories. It needs the seed.
+- [Model providers](./model-providers.md): add, edit, delete and restore a model provider from the catalog.
+- [Agents](./agents.md): create, edit, delete and restore an agent with a harness, a model provider and a model.
+- [Automations](./automations.md): create, edit, enable, delete and restore an automation of an agent in a project.
+- [Executions](./executions.md): start an automation manually, run each harness, stop an execution and continue or fork its Task. It needs the seed.
+- [Events](./events.md): Git host, Jira and cron events start and continue Tasks. It needs the seed.
+- [Connections](./connections.md): the Git host and Jira Connections, their calls to the Git host, their webhook and their repositories. It needs the seed.
 - [API keys and CLI login](./api-keys.md): create an API key in the UI and log in the CLI with it.
 
-Not mapped yet: the Assistant, Skills, MCP servers, Webhooks, Metrics, Users, Defaults and the network policy.
+Not mapped yet: the Assistant, Skills, MCP servers, Webhooks, Metrics, Users, Defaults, the network policy, and project members and repository management.

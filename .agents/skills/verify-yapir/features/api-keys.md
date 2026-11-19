@@ -10,7 +10,7 @@ A user creates an API key in the UI, copies it with its CLI login command, and l
 
 ## How to get to it (user POV)
 
-- The user menu at the bottom of the sidebar, then **API keys**: `<url>/api-keys`.
+- The user menu at the bottom of the sidebar, then **API keys** (or shortcut `G K` / Command Palette `Mod+K`): `<url>/api-keys`.
 - `yapir login`, then any `yapir` command.
 
 ## Driving it with bun instance
@@ -32,4 +32,4 @@ Preconditions:
 - The UI shows the key only after the creation. A reload hides it.
 - Keep the `instance` key: the CLI of the instance uses it, and `doctor` checks it.
 - The login command in the UI uses the published CLI, `npx @yapir-ai/cli`. The recipe runs the CLI of the checkout, which is the code under test.
-- `$C login` without `--name` names the instance `localhost`, for every instance.
+- `$C login` without `--name` names the instance after the first label of the URL host (for `bun instance` URLs on the Docker bridge gateway such as `http://172.17.0.1:<port>`, that is `172` for every instance). Pass `--name`.

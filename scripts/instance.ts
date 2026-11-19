@@ -92,6 +92,9 @@ const cookieHeader = ({ cookie }: Instance) =>
 
 const cliEnv = (id: string) => ({ HOME: path.join(instanceDir(id), "home") });
 
+// Chromium's SingletonSocket fails if TMPDIR is too long for Linux AF_UNIX paths.
+const browserEnv = { TMPDIR: "/tmp" };
+
 const browserCommand = (id: string, args: string[]) => [
   ...playwrightCli,
   `-s=yapir-instance-${id}`,
@@ -365,7 +368,11 @@ async function openBrowser(instance: Instance) {
     ["state-load", statePath],
     ["goto", instanceUrl(instance)],
   ]) {
-    run(browserCommand(instance.id, args), {}, evidenceDir(instance.id));
+    run(
+      browserCommand(instance.id, args),
+      browserEnv,
+      evidenceDir(instance.id)
+    );
   }
 }
 
@@ -519,7 +526,7 @@ async function removeExecutionContainers(instance: Instance) {
 export async function down(id: string) {
   const instance = readInstance(id);
   const [file = "", ...args] = browserCommand(id, ["close"]);
-  spawnSync(file, args);
+  spawnSync(file, args, { env: { ...process.env, ...browserEnv } });
 
   if (isAlive(instance.pid)) {
     process.kill(-instance.pid, "SIGTERM");
@@ -934,7 +941,7 @@ function handOver(command: string, [id = "", ...args]: string[]) {
 
   if (command === "browser") {
     // In the evidence directory: playwright-cli writes its snapshots there and resolves --filename from there.
-    passthrough(browserCommand(id, args), {}, evidenceDir(id));
+    passthrough(browserCommand(id, args), browserEnv, evidenceDir(id));
   }
 }
 
