@@ -30,11 +30,6 @@ export const opencodeHarness: Harness = {
     const endpoint = await Service.ensure({
       env: {
         OPENCODE_CONFIG_CONTENT: JSON.stringify({
-          agents: {
-            yapir: {
-              system: instructions,
-            },
-          },
           // OpenCode searches skills from its working directory upwards: the repositories' are below it.
           skills: repositoryDirectories.flatMap((directory) =>
             skillDirectories.map((skills) => path.join(directory, skills))
@@ -88,7 +83,6 @@ export const opencodeHarness: Harness = {
 
       await client.session.create({
         id: sessionID,
-        agent: "yapir",
         // OpenCode names its variants after the catalog's effort levels.
         model: {
           providerID: model.catalogId,
@@ -99,6 +93,12 @@ export const opencodeHarness: Harness = {
         permissions: [{ action: "*", resource: "*", effect: "allow" }],
       });
     }
+
+    await client.experimental.session.instructions.entry.put({
+      sessionID,
+      key: "yapir",
+      value: instructions,
+    });
 
     // OpenCode's stats count the messages created since then: the execution's, subagents included.
     const openedAt = Date.now();
