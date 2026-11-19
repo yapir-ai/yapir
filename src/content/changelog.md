@@ -4,6 +4,15 @@ description: The changes of each Yapir release, for its users.
 
 # Changelog
 
+## v1.5.1 - 2026-11-19
+
+### Bug Fixes
+
+- **deps:** upgrade vite for GHSA-p4f5-76q4-ffq7 and upgrade all dependencies ([#6](https://github.com/yapir-ai/yapir/issues/6)) ([16ef7b2](https://github.com/yapir-ai/yapir/commit/16ef7b2752ad20bd7caf9544a3ba25df96fde192))
+- **runner:** append the instructions to the OpenCode system prompt ([#8](https://github.com/yapir-ai/yapir/issues/8)) ([e326d48](https://github.com/yapir-ai/yapir/commit/e326d48a229ffbdf36acc97703fb53c0acf4526e))
+- **runner:** keep the turn open while a background command runs ([#7](https://github.com/yapir-ai/yapir/issues/7)) ([38e12fc](https://github.com/yapir-ai/yapir/commit/38e12fc0f9407312ecc66dcd7a73311167751390))
+- **runner:** tell the agent that Docker is available ([#4](https://github.com/yapir-ai/yapir/issues/4)) ([4934077](https://github.com/yapir-ai/yapir/commit/49340770c58484dd411f1bc099af087c15b8b313))
+
 ## v1.5.0 - 2026-11-16
 
 ### Features
