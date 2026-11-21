@@ -66,6 +66,7 @@
     "cn": "^0.5.2",
     "croner": "^11.0.1",
     "drizzle-orm": "1.0.0-rc.5",
+    "effect": "^4.1.5",
     "files-sdk": "^3.2.0",
     "hono": "^4.13.19",
     "hono-openapi": "^1.6.0",

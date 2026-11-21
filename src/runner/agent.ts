@@ -1,12 +1,12 @@
-import { pullInterval } from "@server/lib/executions/execution-lease";
 import { $ } from "bun";
+import { Cause, Effect } from "effect";
 import { z } from "zod";
 
 import { harnesses } from "./harness";
-import type { HarnessSession } from "./harness";
 import { agentInstructions } from "./instructions";
 import { agentClient, failure } from "./server";
 import type { Automation, Project } from "./server";
+import { runTurns } from "./turns";
 import {
   prepareRepositories,
   prepareSkills,
@@ -73,15 +73,6 @@ export function startAgent(
   );
 }
 
-// The agent passes the events on to the harness as they are.
-type Events = unknown[];
-
-const pullDue = Symbol("pull due");
-
-class ExecutionEndedError extends Error {
-  override name = "ExecutionEndedError";
-}
-
 export async function runAgent() {
   const input = process.env.YAPIR_AGENT!;
   // SAFETY: the runner writes this value from its claim, just before it starts the agent.
@@ -89,77 +80,19 @@ export async function runAgent() {
   const agentInput = JSON.parse(input) as AgentInput;
   const server = agentClient(agentInput.proxyUrl);
 
-  try {
-    await runTurns(server, agentInput);
-  } catch (error) {
-    if (error instanceof ExecutionEndedError) {
-      return;
-    }
-
-    await server.fail(failure(error));
-    throw error;
-  }
-}
-
-async function runTurns(
-  server: ReturnType<typeof agentClient>,
-  agentInput: AgentInput
-) {
-  async function pullDuring<T>(
-    work: Promise<T>,
-    receive: (events: Events) => void,
-    usage?: HarnessSession["usage"]
-  ) {
-    for (;;) {
-      const settled = await Promise.race([work, nextPull()]);
-
-      if (settled !== pullDue) {
-        return settled;
-      }
-
-      const answer = await server.pull({ usage: await usage?.() });
-
-      if (answer.attempt !== "running") {
-        throw new ExecutionEndedError(answer.attempt);
-      }
-
-      if (answer.events.length > 0) {
-        receive(answer.events);
-      }
-    }
-  }
-
-  const received: Events = [];
-
-  await using session = await pullDuring(
-    openSession(server, agentInput),
-    (events) => {
-      received.push(...events);
-    }
+  await Effect.runPromise(
+    runTurns({
+      server,
+      harness: agentInput.automation.harness,
+      open: async () => await openSession(server, agentInput),
+    }).pipe(
+      Effect.tapCause((cause) =>
+        Effect.promise(
+          async () => await server.fail(failure(Cause.squash(cause)))
+        )
+      )
+    )
   );
-
-  const send = (events: Events) => {
-    session.send(JSON.stringify({ events }));
-  };
-
-  let events = received;
-
-  for (;;) {
-    if (events.length === 0) {
-      const answer = await server.turnEnd({ usage: await session.usage() });
-
-      if (answer.attempt !== "running") {
-        return;
-      }
-
-      ({ events } = answer);
-    }
-
-    send(events);
-    await pullDuring(session.idle(), send, session.usage);
-    server.saveSession(agentInput.automation.harness, session.export);
-    events = [];
-  }
 }
 
 async function openSession(
@@ -186,12 +119,6 @@ async function openSession(
     repositoryDirectories: project.repositories.map(repositoryDirectory),
     record: server.record,
   });
-}
-
-async function nextPull(): Promise<typeof pullDue> {
-  await Bun.sleep(pullInterval);
-
-  return pullDue;
 }
 
 function proxiedModel(model: Automation["model"], proxyUrl: string) {
