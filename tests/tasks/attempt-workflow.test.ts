@@ -40,14 +40,14 @@ function workflows(
   );
 }
 
-test("the workflow starts the execution environment, then checks the lease each time it ends", async () => {
+test("the workflow starts the execution environment, then checks the lease when it ends, and no later than the lease of a claim", async () => {
   const journal: unknown[] = [];
 
   const { runtime, start } = workflows(journal, {
     dispatch: async () => {
       await Promise.resolve();
     },
-    leases: [10 * 60_000, 2 * 60_000, 0],
+    leases: [10 * 60_000, 60_000, 0],
   });
 
   const lease = { lease: attempt.id };
@@ -55,7 +55,7 @@ test("the workflow starts the execution environment, then checks the lease each 
   await start(attempt);
   await expect.poll(() => journal).toEqual([{ dispatch: attempt }, lease]);
 
-  await runtime.runPromise(TestClock.adjust(10 * 60_000 - 1));
+  await runtime.runPromise(TestClock.adjust(2 * 60_000 - 1));
   await expect.poll(() => journal).toEqual([{ dispatch: attempt }, lease]);
 
   await runtime.runPromise(TestClock.adjust(1));
@@ -63,7 +63,7 @@ test("the workflow starts the execution environment, then checks the lease each 
     .poll(() => journal)
     .toEqual([{ dispatch: attempt }, lease, lease]);
 
-  await runtime.runPromise(TestClock.adjust(2 * 60_000));
+  await runtime.runPromise(TestClock.adjust(60_000));
   await expect
     .poll(() => journal)
     .toEqual([{ dispatch: attempt }, lease, lease, lease]);

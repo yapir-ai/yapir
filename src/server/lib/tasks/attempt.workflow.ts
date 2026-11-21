@@ -1,4 +1,5 @@
 import { DispatcherNameSchema } from "@server/lib/executions/dispatcher.dto";
+import { leaseDuration } from "@server/lib/executions/execution-lease";
 import { Effect, Layer, ManagedRuntime, Schema } from "effect";
 import type { WorkflowEngine } from "effect/workflow";
 import { Activity, DurableClock, Workflow } from "effect/workflow";
@@ -54,9 +55,10 @@ export function attemptWorkflows(
           return;
         }
 
+        // A claim shortens the lease to its duration: no check is later than the lease of a claim.
         yield* DurableClock.sleep({
           name: `lease/${check}`,
-          duration: remaining,
+          duration: Math.min(remaining, leaseDuration),
         });
       }
     })
