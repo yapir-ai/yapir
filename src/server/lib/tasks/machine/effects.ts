@@ -19,23 +19,23 @@ export const release = (
   attempt: Pick<ExecutionSelect, "id" | "dispatcher">
 ): Effect => ({ type: "release", attempt });
 
-// Starting an environment can exceed the Git host's webhook timeout: the effects run after the response.
+// The workflow of an attempt starts its execution environment: the effects only run after the response.
 export function effectRunner({
   dispatchers,
   executionContext,
+  superviseAttempt,
 }: {
   dispatchers: Promise<Dispatchers>;
   executionContext: Pick<ExecutionContext, "waitUntil">;
+  superviseAttempt: (attempt: QueuedAttempt) => Promise<void>;
 }) {
   async function run(effects: Effect[]) {
     const available = await dispatchers;
 
-    for (const { type, attempt } of effects) {
-      const dispatcher = available.get(attempt.dispatcher);
-
-      await (type === "release"
-        ? dispatcher?.release(attempt)
-        : dispatcher?.dispatch(attempt));
+    for (const effect of effects) {
+      await (effect.type === "release"
+        ? available.get(effect.attempt.dispatcher)?.release(effect.attempt)
+        : superviseAttempt(effect.attempt));
     }
   }
 

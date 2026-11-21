@@ -1,6 +1,8 @@
-import { cloudflareWorker } from "@server/cloudflare";
+import { cloudflareWorker } from "@server/cloudflare-worker";
 import type { Clock } from "@server/lib/clock/clock";
 import { Hono } from "hono";
+
+export { ClusterWorkflow } from "@effect/platform-cloudflare/CloudflareDurableObjects";
 
 let time: Date | null = null;
 
@@ -11,9 +13,9 @@ const clock: Clock = {
   },
 };
 
-const yapir = cloudflareWorker(clock);
+const { worker: yapir, attempts } = cloudflareWorker(clock);
 
-// The Worker that `bun dev --mode test` serves: Yapir, with a clock that the tests set.
+// The Worker that `bun dev --mode test` serves: Yapir, with a clock that the tests set, and the lease check that the workflow of an attempt runs when its timer ends.
 export default {
   ...yapir,
   fetch: new Hono<{ Bindings: Env }>()
@@ -32,6 +34,9 @@ export default {
 
       return c.body(null, 204);
     })
+    .post("/api/attempts/lease", async (c) =>
+      c.json({ remaining: await attempts.lease(await c.req.json()) })
+    )
     .all("*", async (c) => await yapir.fetch(c.req.raw, c.env, c.executionCtx))
     .fetch,
 } satisfies ExportedHandler<Env>;

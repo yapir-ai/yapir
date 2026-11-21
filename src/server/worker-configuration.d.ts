@@ -13,10 +13,12 @@ interface __BaseEnv_Env {
 	BETTER_AUTH_SECRET: string;
 	OIDC_CLIENT_SECRET: string;
 	MIGRATION_TOKEN: string;
+	ATTEMPT_WORKFLOW: DurableObjectNamespace<import("./cloudflare").ClusterWorkflow>;
 }
 declare namespace Cloudflare {
 	interface GlobalProps {
 		mainModule: typeof import("./cloudflare");
+		durableNamespaces: "ClusterWorkflow";
 	}
 	interface Env extends __BaseEnv_Env {}
 }

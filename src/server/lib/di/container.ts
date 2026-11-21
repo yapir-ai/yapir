@@ -120,6 +120,7 @@ import { skillListOperation } from "@server/lib/skills/skill-list.operation";
 import { skillRestoreOperation } from "@server/lib/skills/skill-restore.operation";
 import { skillUpdateOperation } from "@server/lib/skills/skill-update.operation";
 import { skillService } from "@server/lib/skills/skill.service";
+import type { QueuedAttempt } from "@server/lib/tasks/machine/attempt";
 import { taskListOperation } from "@server/lib/tasks/task-list.operation";
 import { taskMessageEvent } from "@server/lib/tasks/task-message.event";
 import { taskPurgeOperation } from "@server/lib/tasks/task-purge.operation";
@@ -153,6 +154,7 @@ export interface Deps {
   migrations: Migrations;
   fixedIp?: FixedIp;
   clock: Clock;
+  superviseAttempt: (attempt: QueuedAttempt) => Promise<void>;
 }
 
 // Undefined when the Connection of the type does not exist.
@@ -183,6 +185,7 @@ function createServices(
     executionContext: asValue(executionContext),
     headers: asValue(headers),
     clock: asValue(deps.clock),
+    superviseAttempt: asValue(deps.superviseAttempt),
     auth: asFunction(auth),
     sessionAuth: asFunction(sessionAuth),
     currentUser: asFunction(currentUser),

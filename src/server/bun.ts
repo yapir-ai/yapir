@@ -5,8 +5,10 @@ import { createContent } from "@server/lib/content/content";
 import { relations } from "@server/lib/db";
 import { createMigrations } from "@server/lib/db/migration-apply.operation";
 import { asValue } from "@server/lib/di/typed-container";
+import { attemptWorkflows } from "@server/lib/tasks/attempt.workflow";
 import { Cron } from "croner";
 import { drizzle } from "drizzle-orm/node-postgres";
+import { WorkflowEngine } from "effect/workflow";
 import { Files } from "files-sdk";
 import { bunS3 } from "files-sdk/bun-s3";
 import { Hono } from "hono";
@@ -36,7 +38,13 @@ const yapir = app({
   content: createContent(await sourceFiles("src/content/**/*.md")),
   migrations: createMigrations(await sourceFiles("migrations/*/migration.sql")),
   clock: systemClock,
+  superviseAttempt: async (attempt) => {
+    await workflows.start(attempt);
+  },
 });
+
+// In memory: a restart loses the workflows of the attempts in progress.
+const workflows = attemptWorkflows(WorkflowEngine.layerMemory, yapir.attempts);
 
 // Background work and cron ticks, awaited at shutdown. As on Workers, a failure is logged.
 const pending = new Set<Promise<unknown>>();

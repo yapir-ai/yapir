@@ -22,13 +22,12 @@ import {
   attemptOutcome,
   endAttempt,
   findClaimedAttempt,
-  findExpiredAttempts,
   leaseError,
   queueAttempt,
   renewLease,
   startAttempt,
 } from "./machine/attempt";
-import type { UsageColumns } from "./machine/attempt";
+import type { QueuedAttempt, UsageColumns } from "./machine/attempt";
 import { ciRepository, claimContext } from "./machine/claim-context";
 import { taskCommands, unchanged } from "./machine/command";
 import type { Context, Transition } from "./machine/command";
@@ -53,6 +52,7 @@ export function taskMachine({
   currentUser,
   dispatchers,
   executionContext,
+  superviseAttempt,
   taskService,
   modelProviderResolveOperation,
 }: {
@@ -62,6 +62,7 @@ export function taskMachine({
   currentUser: CurrentUser;
   dispatchers: Promise<Dispatchers>;
   executionContext: Pick<ExecutionContext, "waitUntil">;
+  superviseAttempt: (attempt: QueuedAttempt) => Promise<void>;
   taskService: TaskService;
   modelProviderResolveOperation: ModelProviderResolveOperation;
 }) {
@@ -70,7 +71,11 @@ export function taskMachine({
     clock,
     currentUser,
     taskService,
-    effects: effectRunner({ dispatchers, executionContext }),
+    effects: effectRunner({
+      dispatchers,
+      executionContext,
+      superviseAttempt,
+    }),
   });
 
   const table = {
@@ -147,8 +152,7 @@ export function taskMachine({
       async run(context, { expiredBefore }: { expiredBefore: Date }) {
         const { attempt } = context.task;
 
-        // A pull may have renewed the lease since the sweep read it.
-        if (attempt.leaseExpiresAt >= expiredBefore) {
+        if (attempt.leaseExpiresAt > expiredBefore) {
           return unchanged;
         }
 
@@ -285,15 +289,18 @@ export function taskMachine({
       return await ended(execution);
     },
 
-    async expire() {
-      const { now } = clock;
-      const expired = await findExpiredAttempts(db, now);
+    async dispatch(attempt: QueuedAttempt) {
+      await (await dispatchers).get(attempt.dispatcher)?.dispatch(attempt);
+    },
 
-      await Promise.all(
-        expired.map(
-          async (attempt) => await table.expire(attempt, { expiredBefore: now })
-        )
-      );
+    // The time until the lease of the attempt expires. Zero when the attempt has ended: an expired lease ends it.
+    async lease(attempt: Pick<ExecutionSelect, "id" | "taskId">) {
+      const { now } = clock;
+      const { to, task } = await table.expire(attempt, { expiredBefore: now });
+
+      return to === undefined && task.attempt?.id === attempt.id
+        ? task.attempt.leaseExpiresAt.getTime() - now.getTime()
+        : 0;
     },
 
     async stop({ taskId }: { taskId: string }) {

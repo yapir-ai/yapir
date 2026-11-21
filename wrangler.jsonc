@@ -8,7 +8,7 @@
   "workers_dev": false,
   "preview_urls": false,
   "observability": { "enabled": true, "traces": { "enabled": true } },
-  // Every minute: the execution lease sweep, and a schedule event matched against schedule triggers.
+  // Every minute: a schedule event matched against schedule triggers.
   "triggers": { "crons": ["* * * * *"] },
   // Local development sets them in .env.
   "vars": {
@@ -24,8 +24,15 @@
   },
   // Each task's harness state: its saved session.
   "r2_buckets": [{ "binding": "STATE_BUCKET", "bucket_name": "yapir-state" }],
-  // Deletes the Durable Objects of the former Yapir sandbox, and their data. On a new Worker, it has no effect.
+  // Each attempt's workflow: one Durable Object, which keeps its steps and its timer.
+  "durable_objects": {
+    "bindings": [
+      { "name": "ATTEMPT_WORKFLOW", "class_name": "ClusterWorkflow" },
+    ],
+  },
+  // Sandbox and TaskSandbox: deletes the Durable Objects of the former Yapir sandbox, and their data. On a new Worker, it has no effect.
   "exports": {
+    "ClusterWorkflow": { "type": "durable-object", "storage": "sqlite" },
     "Sandbox": { "type": "durable-object", "state": "deleted" },
     "TaskSandbox": { "type": "durable-object", "state": "deleted" },
   },

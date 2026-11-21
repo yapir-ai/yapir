@@ -10,6 +10,7 @@ import { holdRowLock, waitForLockWaiters } from "@test/kit/lock";
 import { expect, test } from "@test/kit/test";
 
 test("an execution that no runner claimed in time fails, and the task retries its events", async ({
+  request,
   db,
   insert,
   clock,
@@ -43,7 +44,9 @@ test("an execution that no runner claimed in time fails, and the task retries it
 
   const pending = await insert(taskEventRow, { taskId: task.id });
 
-  await clock.tick();
+  const lease = await request.post("/api/attempts/lease", { data: unclaimed });
+
+  expect(await lease.json()).toEqual({ remaining: 0 });
 
   const executions = await db.query.executionTable.findMany({
     orderBy: { queuedAt: "asc" },
@@ -122,12 +125,12 @@ test("an expiry that waits for a pull leaves the execution that the pull renewed
   });
 
   await waitForLockWaiters(db, 1);
-  const tick = clock.tick();
+  const lease = request.post("/api/attempts/lease", { data: running });
   await waitForLockWaiters(db, 2);
   await release();
 
   expect(await (await pull).json()).toEqual({ attempt: "running", events: [] });
-  await tick;
+  expect(await (await lease).json()).toEqual({ remaining: 2 * 60_000 });
 
   expect(await db.query.executionTable.findMany()).toEqual([
     { ...running, leaseExpiresAt: new Date(clock.now.getTime() + 2 * 60_000) },

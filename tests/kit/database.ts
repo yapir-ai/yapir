@@ -7,5 +7,10 @@ export async function truncate(db: Db) {
   );
 
   const tables = rows.map(({ tablename }) => `"${tablename}"`).join(", ");
-  await db.execute(sql.raw(`TRUNCATE ${tables} CASCADE`));
+
+  // The workflow of an attempt of the last test can still hold its task: wait for it before the other tables.
+  await db.transaction(async (tx) => {
+    await tx.execute(sql`LOCK TABLE task`);
+    await tx.execute(sql.raw(`TRUNCATE ${tables} CASCADE`));
+  });
 }

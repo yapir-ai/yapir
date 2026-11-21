@@ -16,7 +16,8 @@ import { eq } from "drizzle-orm";
 
 import type { LockedTask } from "./command";
 
-export type QueuedAttempt = Pick<ExecutionSelect, "id"> & QueuedExecution;
+export type QueuedAttempt = Pick<ExecutionSelect, "id" | "taskId"> &
+  QueuedExecution;
 
 export async function queueAttempt(
   tx: Transaction,
@@ -48,6 +49,7 @@ export async function queueAttempt(
 
   return {
     id,
+    taskId: task.id,
     dispatcher,
     ciRepository,
     payload: {
@@ -125,14 +127,6 @@ export async function findClaimedAttempt(
 ) {
   return await db.query.executionTable.findFirst({
     where: { id: executionId, claimHash: hashSecret(claimId) },
-  });
-}
-
-// Read without a lock: `expire` checks each lease again under its task's lock.
-export async function findExpiredAttempts(db: Db, now: Date) {
-  return await db.query.executionTable.findMany({
-    columns: { id: true, taskId: true },
-    where: { outcome: { isNull: true }, leaseExpiresAt: { lt: now } },
   });
 }
 

@@ -32,6 +32,8 @@ import { projectRoutes } from "./lib/projects/project.routes";
 import { providerCatalogRoutes } from "./lib/provider-catalog/provider-catalog.routes";
 import { repositoryRoutes } from "./lib/repositories/repository.routes";
 import { skillRoutes } from "./lib/skills/skill.routes";
+import type { QueuedAttempt } from "./lib/tasks/machine/attempt";
+import type { TaskMachine } from "./lib/tasks/task.machine";
 import { taskRoutes } from "./lib/tasks/task.routes";
 import { capabilityRoutes } from "./lib/tools/capability.routes";
 import { userRoutes } from "./lib/users/user.routes";
@@ -123,5 +125,25 @@ export function app(deps: Deps) {
     );
   }
 
-  return { fetch, scheduled, migrate };
+  // The workflow of an attempt runs outside a request: each step has its own scope, which awaits its background work.
+  const background = {
+    waitUntil(promise: Promise<unknown>) {
+      void promise;
+    },
+  };
+
+  async function supervise<T>(step: (machine: TaskMachine) => Promise<T>) {
+    return await createAppContainer(deps, background).run(
+      async ({ taskMachine }) => await step(taskMachine)
+    );
+  }
+
+  const attempts = {
+    dispatch: async (attempt: QueuedAttempt) =>
+      await supervise(async (machine) => await machine.dispatch(attempt)),
+    lease: async (attempt: QueuedAttempt) =>
+      await supervise(async (machine) => await machine.lease(attempt)),
+  };
+
+  return { fetch, scheduled, migrate, attempts };
 }
