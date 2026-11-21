@@ -1,4 +1,4 @@
-import { SkillCreateRequest } from "@server/lib/skills/skill-create.dto";
+import { SkillFormSchema } from "@server/lib/skills/skill.api";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useAppForm } from "@web/components/form/app-form";
 import { buttonVariants } from "@web/components/ui/button";
@@ -6,9 +6,10 @@ import { FormFooter, FormSection } from "@web/components/ui/form-section";
 import { Page, PageHeader } from "@web/components/ui/page";
 import { useSessionUser } from "@web/lib/auth/session";
 import { skillsCollection } from "@web/lib/skills/skill.collection";
+import { Schema } from "effect";
 import { v7 as uuidv7 } from "uuid";
 
-const SkillCreateForm = SkillCreateRequest.omit({ id: true });
+const SkillCreateForm = Schema.toStandardSchemaV1(SkillFormSchema);
 
 export const Route = createFileRoute("/skills/create")({
   staticData: {

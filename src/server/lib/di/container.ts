@@ -113,13 +113,6 @@ import { projectUpdateOperation } from "@server/lib/projects/project-update.oper
 import { providerCatalogListOperation } from "@server/lib/provider-catalog/provider-catalog-list.operation";
 import { repositoryListOperation } from "@server/lib/repositories/repository-list.operation";
 import { scheduleEvent } from "@server/lib/schedules/schedule.event";
-import { skillCreateOperation } from "@server/lib/skills/skill-create.operation";
-import { skillDeleteOperation } from "@server/lib/skills/skill-delete.operation";
-import { skillInfoOperation } from "@server/lib/skills/skill-info.operation";
-import { skillListOperation } from "@server/lib/skills/skill-list.operation";
-import { skillRestoreOperation } from "@server/lib/skills/skill-restore.operation";
-import { skillUpdateOperation } from "@server/lib/skills/skill-update.operation";
-import { skillService } from "@server/lib/skills/skill.service";
 import type { QueuedAttempt } from "@server/lib/tasks/machine/attempt";
 import { taskListOperation } from "@server/lib/tasks/task-list.operation";
 import { taskMessageEvent } from "@server/lib/tasks/task-message.event";
@@ -155,6 +148,7 @@ export interface Deps {
   fixedIp?: FixedIp;
   clock: Clock;
   superviseAttempt: (attempt: QueuedAttempt) => Promise<void>;
+  databaseUrl: string;
 }
 
 // Undefined when the Connection of the type does not exist.
@@ -360,13 +354,6 @@ function createServices(
     connectionInfoOperation: asFunction(connectionInfoOperation),
     connectionListOperation: asFunction(connectionListOperation),
     connectionUpdateOperation: asFunction(connectionUpdateOperation),
-    skillCreateOperation: asFunction(skillCreateOperation),
-    skillInfoOperation: asFunction(skillInfoOperation),
-    skillListOperation: asFunction(skillListOperation),
-    skillUpdateOperation: asFunction(skillUpdateOperation),
-    skillDeleteOperation: asFunction(skillDeleteOperation),
-    skillRestoreOperation: asFunction(skillRestoreOperation),
-    skillService: asFunction(skillService),
     defaultsInfoOperation: asFunction(defaultsInfoOperation),
     defaultsUpdateOperation: asFunction(defaultsUpdateOperation),
     networkPolicyInfoOperation: asFunction(networkPolicyInfoOperation),

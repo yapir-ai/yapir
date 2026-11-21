@@ -33,6 +33,7 @@ export function cloudflareWorker(clock: Clock) {
     ).disposer(async (db) => {
       await db.$client.end();
     }),
+    databaseUrl: env.HYPERDRIVE.connectionString,
     files: new Files({
       adapter: r2({
         // SAFETY: the same binding. @effect/platform-cloudflare installs @cloudflare/workers-types, whose R2Bucket differs from the generated one in the projects of the tests and the scripts.

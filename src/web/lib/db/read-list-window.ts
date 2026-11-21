@@ -4,7 +4,7 @@ export async function readListWindow<T>(
   fetchPage: (page: {
     offset: string;
     limit: string;
-  }) => Promise<{ items: T[] }>,
+  }) => Promise<{ items: readonly T[] }>,
   { offset = 0, limit = Infinity }: { offset?: number; limit?: number } = {}
 ) {
   const items: T[] = [];

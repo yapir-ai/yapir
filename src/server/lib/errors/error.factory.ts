@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 
-const ErrorCodes = {
+export const ErrorCodes = {
   CONTENT_NOT_FOUND: "Content could not be found",
   AUTOMATION_DELETED: "This automation is deleted",
   AUTOMATION_DISABLED: "This automation is disabled",

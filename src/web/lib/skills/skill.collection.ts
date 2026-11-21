@@ -1,20 +1,14 @@
+import type { SkillResponse } from "@server/lib/skills/skill.api";
 import { BTreeIndex } from "@tanstack/react-db";
-import { client } from "@web/lib/api";
+import { api } from "@web/lib/api";
 import {
   collection,
   persistSoftDeletableMutation,
 } from "@web/lib/db/collection";
 import { readListWindow } from "@web/lib/db/read-list-window";
-import { parseResponse } from "hono/client";
-import type { InferResponseType } from "hono/client";
 import { toast } from "sonner";
 
-export type Skill = InferResponseType<
-  typeof client.api.skills.$get,
-  200
->["items"][number];
-
-const api = client.api.skills[":skillId"];
+export type Skill = typeof SkillResponse.Type;
 
 export const skillsCollection = collection("skills", {
   syncMode: "eager",
@@ -23,8 +17,16 @@ export const skillsCollection = collection("skills", {
   queryFn: async ({ signal }) =>
     await readListWindow(
       async (page) =>
-        await parseResponse(
-          client.api.skills.$get({ query: page }, { init: { signal } })
+        await api(
+          (client) =>
+            client.skills.list({
+              query: {
+                offset: Number(page.offset),
+                limit: Number(page.limit),
+                order: "desc",
+              },
+            }),
+          { signal }
         )
     ),
   getKey: (skill) => skill.id,
@@ -33,9 +35,9 @@ export const skillsCollection = collection("skills", {
       transaction.mutations.map(async ({ modified }) => {
         const { id, name, description, instructions } = modified;
 
-        const skill = await parseResponse(
-          client.api.skills.$post({
-            json: { id, name, description, instructions },
+        const skill = await api((client) =>
+          client.skills.create({
+            payload: { id, name, description, instructions },
           })
         );
 
@@ -47,17 +49,21 @@ export const skillsCollection = collection("skills", {
   onUpdate: async ({ transaction, collection: skills }) => {
     await Promise.all(
       transaction.mutations.map(async (mutation) => {
-        const param = { skillId: mutation.modified.id };
+        const params = { skillId: mutation.modified.id };
 
         await persistSoftDeletableMutation(mutation, {
           label: "Skill",
           upsert: skills.utils.writeUpsert,
-          remove: async () => await parseResponse(api.$delete({ param })),
+          remove: async () =>
+            await api((client) => client.skills.delete({ params })),
           restore: async () =>
-            await parseResponse(api.restore.$post({ param })),
+            await api((client) => client.skills.restore({ params })),
           update: async ({ name, description, instructions }) =>
-            await parseResponse(
-              api.$patch({ param, json: { name, description, instructions } })
+            await api((client) =>
+              client.skills.update({
+                params,
+                payload: { name, description, instructions },
+              })
             ),
         });
       })

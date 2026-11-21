@@ -29,10 +29,12 @@ async function sourceFiles(pattern: string) {
   );
 }
 
-const db = drizzle(process.env.DATABASE_URL!, { relations });
+const databaseUrl = process.env.DATABASE_URL!;
+const db = drizzle(databaseUrl, { relations });
 
 const yapir = app({
   db: asValue(db),
+  databaseUrl,
   // Bun's S3 client reads its bucket and credentials from the S3_ variables.
   files: new Files({ adapter: bunS3() }),
   content: createContent(await sourceFiles("src/content/**/*.md")),

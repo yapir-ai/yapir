@@ -1,6 +1,5 @@
 import { canWriteSkill } from "@server/lib/auth/access";
-import { SkillInfoParams } from "@server/lib/skills/skill-info.dto";
-import { SkillUpdateRequest } from "@server/lib/skills/skill-update.dto";
+import { SkillFormSchema, SkillParams } from "@server/lib/skills/skill.api";
 import { useLiveSuspenseQuery } from "@tanstack/react-db";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useAppForm } from "@web/components/form/app-form";
@@ -16,12 +15,13 @@ import { BreadcrumbLabel } from "@web/lib/shell/app-breadcrumbs";
 import { SkillInstallButton } from "@web/lib/skills/skill-install-button";
 import { skillsCollection } from "@web/lib/skills/skill.collection";
 import { skillInfoQuery } from "@web/lib/skills/skill.queries";
+import { Schema } from "effect";
 import type { ReactNode } from "react";
 
-const SkillForm = SkillUpdateRequest.required();
+const SkillForm = Schema.toStandardSchemaV1(SkillFormSchema);
 
 export const Route = createFileRoute("/skills/$skillId")({
-  params: { parse: (params) => SkillInfoParams.parse(params) },
+  params: { parse: Schema.decodeUnknownSync(SkillParams) },
   loader: async ({ context, params }) =>
     await context.dbClient.preloadLiveQuery(skillInfoQuery(params.skillId)),
   staticData: {

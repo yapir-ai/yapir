@@ -14,6 +14,7 @@
         "@better-auth/api-key": "^1.7.25",
         "@better-auth/drizzle-adapter": "^1.7.25",
         "@effect/platform-cloudflare": "4.1.5",
+        "@effect/sql-pg": "^4.1.5",
         "@fontsource-variable/inter": "^5.3.0",
         "@fontsource-variable/jetbrains-mono": "^5.3.0",
         "@gitbeaker/rest": "^44.1.5",
@@ -252,6 +253,8 @@
     "@dotenvx/primitives": ["@dotenvx/primitives@0.8.0", "", {}, "sha512-VYJy0uhFm9zTJ1TxBaW/pA8bjbOM/OttaNMwZ1RHG4JKyRG7DhSdiqD1ipQoAyoD22olUtxbP78W9xY3Wd11bg=="],
 
     "@effect/platform-cloudflare": ["@effect/platform-cloudflare@4.1.5", "", { "dependencies": { "@cloudflare/workers-types": "^5.20261114.1", "@effect/sql-sqlite-do": "^4.1.5" }, "peerDependencies": { "@alchemy.run/cloudflare": ">=2.0.0-beta.85 <3", "effect": "^4.1.5" }, "optionalPeers": ["@alchemy.run/cloudflare"] }, "sha512-H8HEFZcUsh4njc7W5E10NlVD2LaJKCuOByx5gTobTMXt84drNrMVGw72JZjzyF0peu2O81tdMu5qBSVtTSsZCg=="],
+
+    "@effect/sql-pg": ["@effect/sql-pg@4.1.5", "", { "peerDependencies": { "effect": "^4.1.5" } }, "sha512-Fs/5EmXykN4vKzWES54aRSLts0jBiQn65Y2jnGq//IX8Qj2McB7+WGYwaGNwxXUq4mXvagGWZPNMO0GefwDpQw=="],
 
     "@effect/sql-sqlite-do": ["@effect/sql-sqlite-do@4.1.5", "", { "peerDependencies": { "effect": "^4.1.5" } }, "sha512-489bi5qSHj4g42Lrv4KeTI8faaOdjwuOx54xmbQxLisGkg50GAEXHbl6OD2cglsREAx2xj6YznFByvziFk7MBw=="],
 
