@@ -46,14 +46,11 @@
 
 - The dev environment is deployed on Cloudflare; the project is not in production. Breaking API and schema changes are allowed. For deployment, secrets or database setup, read `docs/deployment.md`.
 - When a change adds or alters a user happy path, update `src/content/onboarding.md`, the guide a user's coding agent follows to set up Yapir.
-- Design execution features for CI execution environments, such as GitLab CI and GitHub Actions. Yapir's own sandboxes will probably be removed: do not add support for them unless the user asks.
-- When a change needs an operation that your access allows, such as a secret, a database change, a deploy or a verification, do it. Then report only what the user must do.
-- `yapir-ai/ops`, checked out at `~/Projects/yapir-ops`, holds the configuration of the team instances, dev and takima, and the values of the development host. Read its `AGENTS.md` before you act on one of them.
+- The private repository `yapir-ai/ops` holds the configuration of the team instances, dev and takima, and the values of the development host. Read its `AGENTS.md` before you act on one of them.
 
 ## Local environment
 
 - Run Yapir in a disposable instance: `bun instance up`. The skill `verify-yapir` tells how to drive it, and what to give the user when they ask to launch the app. Stop only the instances that you started, with `bun instance down <id>`. See `docs/local-development.md`.
-- Run each smoke test and end-to-end scenario in a subagent, with a self-contained brief. Report its result.
 - porthole records the webhooks of the local GitHub App, GitLab project and Jira site, in the sources `github`, `gitlab` and `jira`. `bun instance webhook` replays one to an instance. Read `http://127.0.0.1:5200/llms.txt` for the rest of its API.
 
 ## Documentation
