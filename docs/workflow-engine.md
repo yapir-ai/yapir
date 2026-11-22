@@ -38,7 +38,7 @@ A turn is one input on one tree of instances, in one transaction: a handler call
 
 ## Rows
 
-`rows()` returns `upsert(table, values)` for a row that the instance owns completely, and `update(table, values)` for some columns of a row that exists. `update` needs the primary key in `values`: without it, the update changes no row. The engine compares the rows at the revive and at the end of the turn, and writes only the rows that changed: the root first, then the other instances by ID, then the order of `rows()`. A row that leaves `rows()` stays in its table.
+`rows()` returns `upsert(table, values)` for a row that the instance owns completely, and `update(table, values)` for some columns of a row that exists. `update` needs the primary key in `values`: without it, the update changes no row. The engine compares the rows at the revive and at the end of the turn, and writes only the rows that changed: the root first, then the other instances in the order that the turn reached them, then the order of `rows()`. A row that leaves `rows()` stays in its table.
 
 ## Code changes and instances in flight
 
@@ -47,7 +47,7 @@ A turn is one input on one tree of instances, in one transaction: a handler call
 | A handler, `rows()` or a private method | None. |
 | A new field | The instance keeps the value of the initializer until a handler changes it. |
 | A removed field | The engine drops the stored value. |
-| The order or the kind of the awaits of `run()` | The next turn fails and writes nothing. Let the instances end, or reset their data. |
+| The order or the kind of the awaits of `run()` | The next turn fails and writes nothing when the journal shows the change. A change before the first step of the journal does not show: the instance then waits at the wrong await. Let the instances end, or reset their data. |
 
 ## Tests
 

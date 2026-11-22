@@ -114,11 +114,25 @@ export function create(
   return Object.assign(runtime, { workflow });
 }
 
+const recorded = (runtime: Runtime, command: number) =>
+  runtime.journal.find(
+    (each) => each.kind !== "run" && each.command === command
+  );
+
 function issue(runtime: Runtime, command: Command) {
   if (runtime.pending) {
     throw new Error(
       `run() of the workflow ${runtime.type} ${runtime.id} waits for one engine promise at a time`
     );
+  }
+
+  const step =
+    runtime.replaying && command.of !== "restart"
+      ? recorded(runtime, command.number)
+      : undefined;
+
+  if (step && (step.kind !== "resolve" || step.of !== command.of)) {
+    throw journalMismatch(runtime);
   }
 
   runtime.pending = command;
@@ -182,9 +196,7 @@ export function start<W extends Workflow<unknown>>(
 }
 
 function replayedChild(runtime: Runtime, command: number) {
-  const step = runtime.journal.find(
-    (each) => each.kind === "start" && each.command === command
-  );
+  const step = recorded(runtime, command);
 
   if (step?.kind !== "start") {
     throw journalMismatch(runtime);

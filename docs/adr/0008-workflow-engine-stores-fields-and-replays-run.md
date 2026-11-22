@@ -11,7 +11,7 @@ A workflow is a class whose fields are its state, whose `run()` is its story, an
 ## Consequences
 
 - The cost of a turn depends on the number of awaits of `run()` since its start or its last `continueAsNew()`, not on the number of handler calls. A workflow that never ends calls `continueAsNew()` to keep its journal short.
-- A change to a handler, to `rows()` or to a field does not break the instances in flight. A change to the order or the kind of the awaits of `run()` makes the next turn of an instance in flight fail and write nothing. The engine has no version API: let the instances end, or reset their data.
+- A change to a handler, to `rows()` or to a field does not break the instances in flight. A change to the order or the kind of the awaits of `run()` makes the next turn of an instance in flight fail and write nothing, when the journal shows the change. A change before the first step of the journal does not show. The engine has no version API: let the instances end, or reset their data.
 - The lock domain is the tree. Each turn locks the row of the root with `select ... for update`, and no other row. A signal between a parent and a child and the result of a child apply in the same transaction. Two turns never wait for each other in a cycle.
 - Only the sweep of the cron fires a deadline. A handler call after a deadline still runs when the sweep has not run.
 - An activity runs once, after the commit, in `waitUntil`. The engine does not store it and does not try it again. A crash between the commit and the activity loses the activity. The workflow must recover with a deadline, as [ADR 0001](0001-runner-drives-executions.md) expects for the dispatch.

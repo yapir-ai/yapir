@@ -211,6 +211,10 @@ async function resolve(instance: Instance, step: ResolveStep) {
 async function advance(instance: Instance) {
   const result = await Promise.race([instance.run!, setImmediate()]);
 
+  if (instance.replaying && (result || instance.pending?.of === "restart")) {
+    throw journalMismatch(instance);
+  }
+
   if (result) {
     await finish(instance, result);
   } else if (instance.pending?.of === "restart") {
@@ -334,7 +338,5 @@ async function persist(session: Session) {
 
 const ordered = (session: Session) =>
   [...session.instances.values()].toSorted(
-    (a, b) =>
-      Number(b.id === b.rootId) - Number(a.id === a.rootId) ||
-      a.id.localeCompare(b.id)
+    (a, b) => Number(b.id === b.rootId) - Number(a.id === a.rootId)
   );

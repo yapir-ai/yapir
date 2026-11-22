@@ -311,6 +311,20 @@ test("a call fails and writes nothing", async ({
     ],
   });
 
+  const reordered = await insert(workflowRow, {
+    id: "01960000-0000-7000-8000-000000000905",
+    rootId: "01960000-0000-7000-8000-000000000905",
+    fields: waiting,
+    journal: [
+      { kind: "run", args: [2], fields: waiting, at: now },
+      {
+        kind: "start",
+        command: 0,
+        child: "01960000-0000-7000-8000-000000000906",
+      },
+    ],
+  });
+
   for (const { id, status, body } of [
     {
       id: "01960000-0000-7000-8000-000000000999",
@@ -322,6 +336,7 @@ test("a call fails and writes nothing", async ({
       }),
     },
     { id: changed.id, status: 500, body: "Internal Server Error" },
+    { id: reordered.id, status: 500, body: "Internal Server Error" },
   ]) {
     const response = await request.post(`/api/probes/counters/${id}/add`, {
       data: { amount: 1 },
@@ -333,6 +348,8 @@ test("a call fails and writes nothing", async ({
     });
   }
 
-  expect(await db.query.workflowTable.findMany()).toEqual([changed]);
+  expect(
+    await db.query.workflowTable.findMany({ orderBy: { id: "asc" } })
+  ).toEqual([changed, reordered]);
   expect(await db.select().from(probeTable)).toEqual([]);
 });
