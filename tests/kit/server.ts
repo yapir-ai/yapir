@@ -26,7 +26,6 @@ const clock: Clock = {
 
 const yapir = cloudflareWorker(clock);
 
-// An engine on the probe workflows, with its own client. A probe route answers after the activities of its turns.
 function probes() {
   const db = drizzle(env.HYPERDRIVE.connectionString, { relations });
   const activities: Promise<void>[] = [];

@@ -629,7 +629,6 @@ export const taskAssociationTable = pgTable(
   ]
 );
 
-// An instance of a workflow. The row of a root is the lock of its whole tree.
 export const workflowTable = pgTable(
   "workflow",
   {
