@@ -13,6 +13,7 @@ import { Counter } from "./workflows/counter";
 import { Helper } from "./workflows/helper";
 import { probeAnnounceOperation } from "./workflows/probe-announce.operation";
 import { probeTable } from "./workflows/probe-tables";
+import { Witness } from "./workflows/witness";
 
 let time: Date | null = null;
 
@@ -38,7 +39,7 @@ function probes() {
         activities.push(promise);
       },
     },
-    workflows: { counter: Counter, helper: Helper },
+    workflows: { counter: Counter, helper: Helper, witness: Witness },
     activities: [
       activity(probeAnnounceOperation, probeAnnounceOperation({ db })),
     ],
@@ -121,6 +122,12 @@ export default {
     })
     .post("/api/probes/helpers/:id/finish", async (c) => {
       await c.var.engine.get(Helper, c.req.param("id")).finish();
+
+      return c.body(null, 204);
+    })
+    .post("/api/probes/witnesses/:id/add", async (c) => {
+      const { item } = await c.req.json<{ item: string }>();
+      await c.var.engine.start(Witness, c.req.param("id")).add(item);
 
       return c.body(null, 204);
     })
