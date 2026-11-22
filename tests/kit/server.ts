@@ -23,7 +23,7 @@ const clock: Clock = {
 
 const yapir = cloudflareWorker(clock);
 
-// An engine on the probe workflows, with its own client. Close it when its activities end.
+// An engine on the probe workflows, with its own client. A probe route answers after the activities of its turns.
 function probes() {
   const db = drizzle(env.HYPERDRIVE.connectionString, { relations });
   const activities: Promise<void>[] = [];
@@ -77,7 +77,7 @@ export default {
       const { engine, close } = probes();
       c.set("engine", engine);
       await nextMiddleware();
-      c.executionCtx.waitUntil(close());
+      await close();
     })
     .post("/api/probes/counters/:id/add", async (c) => {
       const { amount, goal } = await c.req.json<{
