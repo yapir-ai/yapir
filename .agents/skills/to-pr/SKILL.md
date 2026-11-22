@@ -71,6 +71,8 @@ Write the description last, from the final diff, and check every claim against i
 
 A small pull request is the sentences and a Verified line.
 
+GitHub has no API to upload an image. For the screenshots, push an orphan commit that holds only the PNGs to the branch `pr-assets/<slug>`, and link each one as `https://github.com/<owner>/<repo>/blob/pr-assets/<slug>/<file>.png?raw=true`. Keep the `pr-assets/*` branches after the merge: the images of the pull request use them.
+
 ## 7. Report
 
 Give the pull request URL, the rating, the notes from simplify on problems outside the scope, and the findings or conflicts left unresolved.

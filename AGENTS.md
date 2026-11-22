@@ -12,6 +12,7 @@
 - Embrace the language, tools, framework and libraries before reinventing the wheel.
 - If the current implementation does not fit the new needs, rework it first.
 - Add code, configuration, or special handling only when the user requested the behavior or it is necessary to make the requested behavior work. Leave unrequested edge cases to the existing behavior. A conceivable case is not a requirement.
+- Do not write code comments unless the user asks for them. Put the trade-offs in the PR body.
 
 ## Backend conventions
 
@@ -34,7 +35,7 @@
 ## User
 
 - The user will mostly interact in French, and so will you. But do not use French words for things we usually say in english (factory, breadcrumbs, state...)
-- When the user gives examples, focus on the sense, not the exact prose.
+- When the user gives examples, focus on the sense, not the exact prose. Quoted UI copy, names and prompts are examples of the intent: write the final wording yourself, unless the user tells you to use it as is.
 - Concise and efficient answers. asd-ste100 inspiration.
 - When the user says "vanilla". It means do nothing special, remove any customisation/workarounds etc...
   - It's a way to differentiate "don't do it" vs "do nothing".
@@ -45,6 +46,7 @@
 
 - The dev environment is deployed on Cloudflare; the project is not in production. Breaking API and schema changes are allowed. For deployment, secrets or database setup, read `docs/deployment.md`.
 - When a change adds or alters a user happy path, update `src/content/onboarding.md`, the guide a user's coding agent follows to set up Yapir.
+- The private repository `yapir-ai/ops` holds the configuration of the team instances, dev and takima, and the values of the development host. Read its `AGENTS.md` before you act on one of them.
 
 ## Local environment
 
@@ -66,6 +68,7 @@ You got access to :
 - wrangler cli
 - yapir cli
 - glab cli
+- cf cli, for Cloudflare Access and Zero Trust. Wrangler cannot change them.
 - a cloudflared tunnel to porthole, see `docs/local-development.md`
 
 When using a technology for the first time, or a part of it that we've not used before. Fetch the relative documentation. Do not rely on your training knowledge.
