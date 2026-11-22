@@ -154,7 +154,6 @@ test("an opened pull request starts the automations whose trigger matches", asyn
         endedAt: null,
       }),
       // The hash of a secret that only the runner receives.
-      claimHash: expect.any(String),
     },
   ]);
 });
@@ -249,7 +248,6 @@ test("a new commit on a pull request starts its task again", async ({
         startedAt: null,
         endedAt: null,
       }),
-      claimHash: expect.any(String),
     },
   ]);
 });

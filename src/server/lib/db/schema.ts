@@ -487,7 +487,6 @@ export const executionTable = pgTable(
     outcome: executionOutcomeEnum(),
     // Fixed at creation: the release targets the environment the execution was dispatched to.
     dispatcher: text().$type<DispatcherName>().notNull(),
-    claimHash: text("claim_hash").notNull(),
     tokenHash: text("token_hash").unique(),
     leaseExpiresAt: timestamp("lease_expires_at", {
       withTimezone: true,

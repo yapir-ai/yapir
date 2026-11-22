@@ -225,7 +225,10 @@ export function taskMachine({
       claimId,
       identityToken,
     }: ExecutionClaimRequestDto) {
-      const attempt = await findClaimedAttempt(db, { executionId, claimId });
+      const attempt = await findClaimedAttempt(db, env, {
+        executionId,
+        claimId,
+      });
 
       if (!attempt) {
         throw unauthorized("EXECUTION_CLAIM_INVALID");

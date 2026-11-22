@@ -11,7 +11,6 @@ export function executionRow({
     taskId,
     outcome: "succeeded",
     dispatcher: "github-actions",
-    claimHash: "execution-claim-hash",
     tokenHash: null,
     leaseExpiresAt: new Date("2026-08-31T09:15:00Z"),
     queuedAt: new Date("2026-08-31T09:00:00Z"),

@@ -9,8 +9,8 @@ import {
   leaseDuration,
 } from "@server/lib/executions/execution-lease";
 import {
-  createSecret,
-  hashSecret,
+  deriveClaimId,
+  isClaimId,
 } from "@server/lib/executions/execution-secret";
 import { eq } from "drizzle-orm";
 
@@ -21,7 +21,7 @@ export type QueuedAttempt = Pick<ExecutionSelect, "id"> & QueuedExecution;
 export async function queueAttempt(
   tx: Transaction,
   task: Pick<LockedTask, "id" | "automationId">,
-  env: Pick<ApiEnv, "SERVER_URL" | "RUNNER_IMAGE">,
+  env: Pick<ApiEnv, "SERVER_URL" | "RUNNER_IMAGE" | "ENCRYPTION_KEY">,
   now: Date
 ): Promise<QueuedAttempt> {
   const automation = await tx.query.automationTable.findFirst({
@@ -31,14 +31,12 @@ export async function queueAttempt(
   });
 
   const { dispatcher, ciRepository } = automation!;
-  const claimId = createSecret();
 
   const [execution] = await tx
     .insert(executionTable)
     .values({
       taskId: task.id,
       dispatcher,
-      claimHash: hashSecret(claimId),
       leaseExpiresAt: expiresIn(now, claimTimeout),
       queuedAt: now,
     })
@@ -52,7 +50,7 @@ export async function queueAttempt(
     ciRepository,
     payload: {
       executionId: id,
-      claimId,
+      claimId: deriveClaimId(id, env),
       cacheKey: task.id,
       serverUrl: env.SERVER_URL,
       image: env.RUNNER_IMAGE,
@@ -121,11 +119,16 @@ export async function endAttempt(
 
 export async function findClaimedAttempt(
   db: Db,
+  env: Pick<ApiEnv, "ENCRYPTION_KEY">,
   { executionId, claimId }: { executionId: string; claimId: string }
 ) {
-  return await db.query.executionTable.findFirst({
-    where: { id: executionId, claimHash: hashSecret(claimId) },
+  const execution = await db.query.executionTable.findFirst({
+    where: { id: executionId },
   });
+
+  return execution && isClaimId(claimId, executionId, env)
+    ? execution
+    : undefined;
 }
 
 // Read without a lock: `expire` checks each lease again under its task's lock.

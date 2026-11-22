@@ -1,0 +1,1 @@
+ALTER TABLE "execution" DROP COLUMN "claim_hash";
