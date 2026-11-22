@@ -24,7 +24,9 @@ export interface CapabilityDefinition extends CatalogMetadata {
 
 export type CapabilityRegistry = ReadonlyMap<string, CapabilityDefinition>;
 
-const scopeDescriptions = {
+export type ScopeDescriptions = Record<Exclude<ToolScope, undefined>, string>;
+
+const issueScopeDescriptions: ScopeDescriptions = {
   scoped:
     "Its scope: reads reach the issues and change requests associated with this automation's tasks, writes those associated with this task; a list keeps only the associated ones, so a GitHub or Jira page can hold fewer items than requested.",
   unscoped:
@@ -42,11 +44,13 @@ export function tool<Input extends z.ZodObject>({
   name,
   description,
   inputSchema,
+  scopeDescriptions = issueScopeDescriptions,
   execute,
 }: {
   name: string;
   description: string;
   inputSchema: Input;
+  scopeDescriptions?: ScopeDescriptions;
   execute: (
     input: z.infer<Input>,
     context: ToolCallContext

@@ -219,7 +219,7 @@ export function CapabilityPicker({
                         <Info size={13} />
                       </TooltipTrigger>
                       <TooltipContent>
-                        Scoped: the resources of the automation&apos;s Tasks.
+                        Scoped: the resources of the automation and its Tasks.
                         Unscoped: every resource.
                       </TooltipContent>
                     </Tooltip>

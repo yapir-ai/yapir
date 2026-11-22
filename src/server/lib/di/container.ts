@@ -127,7 +127,10 @@ import { taskSessionInfoOperation } from "@server/lib/tasks/task-session-info.op
 import { taskSessionUpdateOperation } from "@server/lib/tasks/task-session-update.operation";
 import { taskMachine } from "@server/lib/tasks/task.machine";
 import { taskService } from "@server/lib/tasks/task.service";
-import type { CapabilityRegistry } from "@server/lib/tools/capability-definition";
+import type {
+  CapabilityDefinition,
+  CapabilityRegistry,
+} from "@server/lib/tools/capability-definition";
 import { capabilityListOperation } from "@server/lib/tools/capability-list.operation";
 import { taskMcpOperation } from "@server/lib/tools/task-mcp.operation";
 import { userListOperation } from "@server/lib/users/user-list.operation";
@@ -140,6 +143,7 @@ import { webhookListOperation } from "@server/lib/webhooks/webhook-list.operatio
 import { webhookRestoreOperation } from "@server/lib/webhooks/webhook-restore.operation";
 import { webhookUpdateOperation } from "@server/lib/webhooks/webhook-update.operation";
 import { webhookEvents } from "@server/lib/webhooks/webhook.event";
+import { yapirCapabilities } from "@server/lib/yapir/yapir.capabilities";
 import type { Resolver } from "awilix";
 import type { Files } from "files-sdk";
 
@@ -284,6 +288,10 @@ function createServices(
     ),
     capabilityRegistry: asFunction(
       async (services: {
+        db: Db;
+        clock: Clock;
+        eventRegistry: Promise<EventRegistry>;
+        triggerEventRegistry: Promise<TriggerEventRegistry>;
         gitHosts: Promise<GitHosts>;
         jira: Promise<JiraIntegration | undefined>;
         mcpServers: Promise<McpServerSelect[]>;
@@ -295,15 +303,29 @@ function createServices(
           services.mcpServers,
         ]);
 
-        return new Map(
-          [
-            ...gitHostEntries(gitHosts, (host) => host.capabilities),
-            ...(jira?.capabilities ?? []),
-            ...mcpServers.flatMap((server) =>
-              mcpServerCapabilities(server, services.mcpServerClient)
-            ),
-          ].map((definition) => [definition.name, definition])
-        );
+        const registry = new Map<string, CapabilityDefinition>();
+
+        const definitions = [
+          ...gitHostEntries(gitHosts, (host) => host.capabilities),
+          ...(jira?.capabilities ?? []),
+          ...mcpServers.flatMap((server) =>
+            mcpServerCapabilities(server, services.mcpServerClient)
+          ),
+          // The capability catalog of an execution lists this registry.
+          ...yapirCapabilities({
+            db: services.db,
+            clock: services.clock,
+            eventRegistry: services.eventRegistry,
+            triggerEventRegistry: services.triggerEventRegistry,
+            capabilityRegistry: Promise.resolve(registry),
+          }),
+        ];
+
+        for (const definition of definitions) {
+          registry.set(definition.name, definition);
+        }
+
+        return registry;
       }
     ),
     mcpServerClient: asFunction(mcpServerClient),
