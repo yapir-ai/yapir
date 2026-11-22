@@ -96,7 +96,7 @@ export function workflowEngine({
     transaction: async <T>(work: (unit: Unit) => Promise<T>) =>
       await within(async (context) => await work(unit(context))),
     async sweep() {
-      const targets = await due(db, clock.now);
+      const targets = await due(db, clock.now, Object.keys(workflows));
 
       await Promise.all(
         targets.map(

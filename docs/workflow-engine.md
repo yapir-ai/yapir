@@ -30,7 +30,7 @@ A turn is one input on one tree of instances, in one transaction: a handler call
 
 ## Timers
 
-`this.until(condition, { deadline })` resolves `true` when the condition is true after a handler, a signal or a step. It resolves `false` only in a wake turn, when `deadline()` is before the time of the turn. The cron calls `engine.sweep()` each minute. A handler can move the deadline: the sweep reads `deadline()` again under the lock.
+`this.until(condition, { deadline })` resolves `true` when the condition is true after a handler, a signal or a step. It resolves `false` only in a wake turn, when `deadline()` is before the time of the turn. The cron calls `engine.sweep()` each minute. The sweep wakes only the instances of the workflow classes of its engine. A handler can move the deadline: the sweep reads `deadline()` again under the lock.
 
 ## Activities
 

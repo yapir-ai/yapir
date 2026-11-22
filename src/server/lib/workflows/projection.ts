@@ -18,11 +18,14 @@ const isKeyOf = <V extends object>(
 function primaryKey<V extends object>(table: PgTable, values: V) {
   const { columns, primaryKeys } = getTableConfig(table);
 
-  const keyColumns =
-    primaryKeys[0]?.columns ?? columns.filter((column) => column.primary);
+  const keyNames = new Set(
+    (primaryKeys[0]?.columns ?? columns.filter((column) => column.primary)).map(
+      ({ name }) => name
+    )
+  );
 
   return Object.entries(getTableColumns(table)).flatMap(([key, column]) =>
-    keyColumns.includes(column)
+    keyNames.has(column.name)
       ? [{ column, value: isKeyOf(values, key) ? values[key] : undefined }]
       : []
   );

@@ -1,6 +1,6 @@
 import type { Db, Transaction } from "@server/lib/db";
 import { workflowTable } from "@server/lib/db/schema";
-import { and, eq, lt } from "drizzle-orm";
+import { and, eq, inArray, lt } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { encode } from "./codec";
@@ -94,9 +94,15 @@ export async function deleteTree(tx: Transaction, target: Target) {
   }
 }
 
-export async function due(db: Db, now: Date): Promise<Target[]> {
+export async function due(
+  db: Db,
+  now: Date,
+  types: string[]
+): Promise<Target[]> {
   return await db
     .select({ type: workflowTable.type, id: workflowTable.id })
     .from(workflowTable)
-    .where(lt(workflowTable.wakeAt, now));
+    .where(
+      and(lt(workflowTable.wakeAt, now), inArray(workflowTable.type, types))
+    );
 }
