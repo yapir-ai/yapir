@@ -1,6 +1,16 @@
 import { cloudflareWorker } from "@server/cloudflare";
 import type { Clock } from "@server/lib/clock/clock";
+import { relations } from "@server/lib/db";
+import { activity } from "@server/lib/workflows/activity";
+import { workflowEngine } from "@server/lib/workflows/engine";
+import type { WorkflowEngine } from "@server/lib/workflows/engine";
+import { env } from "cloudflare:workers";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { Hono } from "hono";
+
+import { Counter } from "./workflows/counter";
+import { Helper } from "./workflows/helper";
+import { probeAnnounceOperation } from "./workflows/probe-announce.operation";
 
 let time: Date | null = null;
 
@@ -13,10 +23,37 @@ const clock: Clock = {
 
 const yapir = cloudflareWorker(clock);
 
+// An engine on the probe workflows, with its own client. Close it when its activities end.
+function probes() {
+  const db = drizzle(env.HYPERDRIVE.connectionString, { relations });
+  const activities: Promise<void>[] = [];
+
+  const engine = workflowEngine({
+    db,
+    clock,
+    executionContext: {
+      waitUntil(promise: Promise<void>) {
+        activities.push(promise);
+      },
+    },
+    workflows: { counter: Counter, helper: Helper },
+    activities: [
+      activity(probeAnnounceOperation, probeAnnounceOperation({ db })),
+    ],
+  });
+
+  async function close() {
+    await Promise.allSettled(activities);
+    await db.$client.end();
+  }
+
+  return { engine, close };
+}
+
 // The Worker that `bun dev --mode test` serves: Yapir, with a clock that the tests set.
 export default {
   ...yapir,
-  fetch: new Hono<{ Bindings: Env }>()
+  fetch: new Hono<{ Bindings: Env; Variables: { engine: WorkflowEngine } }>()
     .put("/api/clock", async (c) => {
       const { now } = await c.req.json<{ now: string | null }>();
       time = now === null ? null : new Date(now);
@@ -24,11 +61,54 @@ export default {
       return c.body(null, 204);
     })
     .post("/api/cron", async (c) => {
+      const { engine, close } = probes();
+
       await yapir.scheduled(
         { scheduledTime: clock.now.getTime() },
         c.env,
         c.executionCtx
       );
+      await engine.sweep();
+      await close();
+
+      return c.body(null, 204);
+    })
+    .use("/api/probes/*", async (c, nextMiddleware) => {
+      const { engine, close } = probes();
+      c.set("engine", engine);
+      await nextMiddleware();
+      c.executionCtx.waitUntil(close());
+    })
+    .post("/api/probes/counters/:id/add", async (c) => {
+      const { amount, goal } = await c.req.json<{
+        amount: number;
+        goal?: number;
+      }>();
+
+      const counter =
+        goal === undefined
+          ? c.var.engine.get(Counter, c.req.param("id"))
+          : c.var.engine.start(Counter, c.req.param("id"), goal);
+
+      return c.json(await counter.add(amount));
+    })
+    .post("/api/probes/counters/:id/extend", async (c) => {
+      const { duration } = await c.req.json<{ duration: number }>();
+      await c.var.engine.get(Counter, c.req.param("id")).extend(duration);
+
+      return c.body(null, 204);
+    })
+    .get("/api/probes/counters/:id", async (c) =>
+      c.json(await c.var.engine.get(Counter, c.req.param("id")).report())
+    )
+    .post("/api/probes/helpers/:id/greet", async (c) => {
+      const { text } = await c.req.json<{ text: string }>();
+      await c.var.engine.get(Helper, c.req.param("id")).greet(text);
+
+      return c.body(null, 204);
+    })
+    .post("/api/probes/helpers/:id/finish", async (c) => {
+      await c.var.engine.get(Helper, c.req.param("id")).finish();
 
       return c.body(null, 204);
     })
