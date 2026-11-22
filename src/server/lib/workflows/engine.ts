@@ -3,6 +3,7 @@ import type { Db, Transaction } from "@server/lib/db";
 
 import type { Activity } from "./activity";
 import { handle } from "./handle";
+import { typeOf } from "./runtime";
 import type { Call, WorkflowClass } from "./runtime";
 import type { Json, Value } from "./storage.types";
 import { deleteTree, due } from "./store";
@@ -38,11 +39,6 @@ export function workflowEngine({
   workflows: Record<string, WorkflowClass>;
   activities: Activity[];
 }) {
-  const typeOf = (workflow: WorkflowClass) =>
-    Object.entries(workflows).find(
-      ([, candidate]) => candidate === workflow
-    )![0];
-
   async function within<T>(work: (context: Context) => Promise<T>) {
     const calls: Call[] = [];
 
@@ -69,7 +65,7 @@ export function workflowEngine({
           async (context) =>
             await turn(
               context,
-              { type: typeOf(workflow), id },
+              { type: typeOf(workflows, workflow), id },
               { kind: "call", method, args, start }
             )
         )
@@ -85,7 +81,7 @@ export function workflowEngine({
       get: (workflow, id) => updates(workflow, id, open),
       start: (workflow, id, ...args) => updates(workflow, id, open, args),
       delete: async (workflow, id) =>
-        await deleteTree(context.tx, { type: typeOf(workflow), id }),
+        await deleteTree(context.tx, { type: typeOf(workflows, workflow), id }),
     };
   }
 

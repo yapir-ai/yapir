@@ -6,7 +6,7 @@ import { notFound } from "@server/lib/errors/error.factory";
 
 import { encode, install } from "./codec";
 import { write } from "./projection";
-import { create } from "./runtime";
+import { create, journalMismatch } from "./runtime";
 import type {
   Call,
   Instance,
@@ -198,9 +198,7 @@ async function resolve(instance: Instance, step: ResolveStep) {
     command?.of !== step.of ||
     command.number !== step.command
   ) {
-    throw new Error(
-      `The journal of the workflow ${instance.type} ${instance.id} does not match its run()`
-    );
+    throw journalMismatch(instance);
   }
 
   install(instance, step.fields);

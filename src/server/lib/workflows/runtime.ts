@@ -70,6 +70,22 @@ export interface Instance extends Runtime {
 
 let constructed: Runtime | undefined;
 
+export function typeOf(
+  workflows: Record<string, WorkflowClass>,
+  workflow: WorkflowClass
+) {
+  const [type] = Object.entries(workflows).find(
+    ([, candidate]) => candidate === workflow
+  )!;
+
+  return type;
+}
+
+export const journalMismatch = ({ type, id }: Identity) =>
+  new Error(
+    `The journal of the workflow ${type} ${id} does not match its run()`
+  );
+
 export function constructing() {
   return constructed!;
 }
@@ -171,9 +187,7 @@ function replayedChild(runtime: Runtime, command: number) {
   );
 
   if (step?.kind !== "start") {
-    throw new Error(
-      `The journal of the workflow ${runtime.type} ${runtime.id} does not match its run()`
-    );
+    throw journalMismatch(runtime);
   }
 
   return step.child;
@@ -188,10 +202,6 @@ function spawn(
   const { session } = runtime;
   const id = uuidv7();
 
-  const [type] = Object.entries(session.workflows).find(
-    ([, candidate]) => candidate === workflow
-  )!;
-
   runtime.journal.push({ kind: "start", command, child: id });
 
   session.instances.set(
@@ -200,7 +210,7 @@ function spawn(
       session,
       {
         id,
-        type,
+        type: typeOf(session.workflows, workflow),
         rootId: runtime.rootId,
         parentId: runtime.id,
         createdAt: session.now,
