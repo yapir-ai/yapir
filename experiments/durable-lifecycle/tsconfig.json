@@ -15,8 +15,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "types": ["bun"]
+    "noImplicitOverride": true
   },
   "include": ["**/*.ts"]
 }
