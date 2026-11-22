@@ -23,7 +23,7 @@ export function projectListOperation({
       where: {
         id: id ? { in: id } : EmptyFilter,
         repositories: repositoryId ? { id: { in: repositoryId } } : EmptyFilter,
-        ...(await currentUser.readableProjects()),
+        AND: [await currentUser.readableProjects()],
       },
       orderBy: { id: order },
       offset,
