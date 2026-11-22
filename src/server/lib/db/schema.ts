@@ -19,6 +19,11 @@ import type { HarnessName } from "@server/lib/executions/harness.dto";
 import type { McpTool } from "@server/lib/mcp-servers/mcp-server.dto";
 import { TaskStateSchema } from "@server/lib/tasks/task.dto";
 import { WebhookAuthSchema } from "@server/lib/webhooks/webhook.dto";
+import type {
+  Fields,
+  JsonObject,
+  Step,
+} from "@server/lib/workflows/storage.types";
 import type { UIMessage } from "ai";
 import { sql } from "drizzle-orm";
 import {
@@ -38,6 +43,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { v7 as uuidv7 } from "uuid";
 
 import { encryptedText } from "./encrypted-text";
@@ -622,3 +628,29 @@ export const taskAssociationTable = pgTable(
     index().on(table.taskId),
   ]
 );
+
+// An instance of a workflow. The row of a root is the lock of its whole tree.
+export const workflowTable = pgTable(
+  "workflow",
+  {
+    id: uuid().primaryKey(),
+    type: text().notNull(),
+    rootId: uuid("root_id")
+      .notNull()
+      .references((): AnyPgColumn => workflowTable.id, { onDelete: "cascade" }),
+    parentId: uuid("parent_id"),
+    fields: jsonb().$type<Fields>().notNull(),
+    journal: jsonb().$type<Step[]>().notNull(),
+    result: jsonb().$type<JsonObject>(),
+    wakeAt: timestamp("wake_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  },
+  (table) => [
+    index().on(table.rootId),
+    index()
+      .on(table.wakeAt)
+      .where(sql`${table.wakeAt} is not null`),
+  ]
+);
+
+export type WorkflowSelect = typeof workflowTable.$inferSelect;
