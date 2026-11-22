@@ -112,6 +112,15 @@ The deploy workflow runs on each push to `main`, and on each release. After the 
 5. Add a model provider. Create a Project and link its repositories. Create an Agent and an Automation in this Project. Trigger a real Git host event. Make sure that the clone, the harness and the model and tool calls work.
 6. After the execution succeeds, trigger another event. Make sure that its execution continues the same Session, with the conversation history.
 
+### Read the telemetry
+
+`cf o11y telemetry query --body '<json>'` reads the Workers Observability data of the Worker. The body holds `queryId` (any string), `view` (`calculations`, `events` or `traces`), `timeframe: {from, to}` in milliseconds, and `parameters: {filters, groupBys, calculations, orderBy, limit}`.
+
+- Filter the Worker with `$metadata.service eq <Worker name>`.
+- Route latency: group by `$workers.event.path` and calculate on `$workers.wallTimeMs`. The operators are `count`, `median`, `p90`, `p99` and `max`.
+- Spans: filter `$metadata.type eq span`. The name is in `$metadata.transactionName` and the duration in `$metadata.duration`. For the spans of one request, use `view: events` and filter `$metadata.traceId`.
+- The logs are head-sampled. The queries through Hyperdrive have no span, only `hyperdrive_connect`.
+
 ## Run in a container
 
 The image of `Dockerfile` runs the instance as a Bun process, `src/server/bun.ts`. The process serves the frontend and the API, runs the cron every minute and applies the migrations when it starts. You can run more than one container: each minute of the cron runs once, and the migrations run one at a time. On `SIGTERM`, the process completes the requests and the work in progress, then stops.
