@@ -5,12 +5,14 @@ import { activity } from "@server/lib/workflows/activity";
 import { workflowEngine } from "@server/lib/workflows/engine";
 import type { WorkflowEngine } from "@server/lib/workflows/engine";
 import { env } from "cloudflare:workers";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Hono } from "hono";
 
 import { Counter } from "./workflows/counter";
 import { Helper } from "./workflows/helper";
 import { probeAnnounceOperation } from "./workflows/probe-announce.operation";
+import { probeTable } from "./workflows/probe-tables";
 
 let time: Date | null = null;
 
@@ -101,6 +103,16 @@ export default {
     .get("/api/probes/counters/:id", async (c) =>
       c.json(await c.var.engine.get(Counter, c.req.param("id")).report())
     )
+    .delete("/api/probes/counters/:id", async (c) => {
+      const id = c.req.param("id");
+
+      await c.var.engine.transaction(async (unit) => {
+        await unit.delete(Counter, id);
+        await unit.tx.delete(probeTable).where(eq(probeTable.id, id));
+      });
+
+      return c.body(null, 204);
+    })
     .post("/api/probes/helpers/:id/greet", async (c) => {
       const { text } = await c.req.json<{ text: string }>();
       await c.var.engine.get(Helper, c.req.param("id")).greet(text);
