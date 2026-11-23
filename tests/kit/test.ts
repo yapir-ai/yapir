@@ -15,6 +15,7 @@ import { github } from "./github";
 import { inserter } from "./insert";
 import { mcp } from "./mcp";
 import { oidc } from "./oidc";
+import { probes } from "./workflows/probes";
 
 export type TestDb = Db & { $client: Pool };
 
@@ -27,6 +28,7 @@ export const test = base.extend<{
   oidc: ReturnType<typeof oidc>;
   mcp: ReturnType<typeof mcp>;
   outsider: APIRequestContext;
+  probes: ReturnType<typeof probes>;
 }>({
   // oxlint-disable-next-line eslint/no-empty-pattern Playwright reads a fixture's dependencies from its destructuring pattern.
   instance: async ({}, use) => {
@@ -77,6 +79,9 @@ export const test = base.extend<{
 
     await use(context.request);
     await context.close();
+  },
+  probes: async ({ db }, use) => {
+    await use(probes(db));
   },
   page: async ({ page, db, insert, instance }, use) => {
     const admin = await insert(userRow);

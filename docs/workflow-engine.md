@@ -59,4 +59,4 @@ A turn is one input on one tree of instances, in one transaction: a handler call
 
 ## Tests
 
-Test a workflow through its entry, as `tests/AGENTS.md` tells. Insert the `workflow` rows of the Given with `tests/kit/factories/workflow.ts`, and assert the whole rows. `tests/workflows/` tests the engine with the probe workflows and the routes of `tests/kit/server.ts`.
+Test a workflow through its entry, as `tests/AGENTS.md` tells. Insert the `workflow` rows of the Given with `tests/kit/factories/workflow.ts`, and assert the whole rows. `tests/workflows/` tests the engine through `@workflow`, with the probe workflows and the fixture `probes`.

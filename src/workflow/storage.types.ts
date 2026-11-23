@@ -23,7 +23,7 @@ export interface RunStep {
   at: number;
 }
 
-export interface StartStep {
+interface StartStep {
   kind: "start";
   command: number;
   child: string;

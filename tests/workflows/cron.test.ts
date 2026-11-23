@@ -6,7 +6,7 @@ import { probeCallTable } from "@test/kit/workflows/probe-tables";
 test("a counter expires at the first tick after its deadline", async ({
   db,
   insert,
-  clock,
+  probes: { engine, clock, activities },
 }) => {
   const now = clock.now.getTime();
 
@@ -26,12 +26,13 @@ test("a counter expires at the first tick after its deadline", async ({
 
   await insert(probeRow, { id: counter.id });
 
-  await clock.tick();
+  await engine.sweep();
 
   expect(await db.query.workflowTable.findMany()).toEqual([counter]);
 
-  await clock.skip(1);
-  await clock.tick();
+  clock.now = new Date(now + 1);
+  await engine.sweep();
+  await Promise.all(activities);
 
   expect(await db.query.workflowTable.findMany()).toEqual([
     { ...counter, journal: [], result: { rounds: 0 }, wakeAt: null },

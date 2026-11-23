@@ -10,7 +10,7 @@ import type { Clock, Context } from "./turn";
 import type { Workflow } from "./workflow";
 import type { Updates } from "./workflow.types";
 
-export interface Unit<Tx extends Transaction = Transaction> {
+interface Unit<Tx extends Transaction = Transaction> {
   tx: Tx;
   get: <W extends Workflow<unknown>>(
     workflow: new () => W,

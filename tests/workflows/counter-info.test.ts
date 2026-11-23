@@ -1,9 +1,10 @@
 import { workflowRow } from "@test/kit/factories/workflow";
 import { expect, test } from "@test/kit/test";
+import { Counter } from "@test/kit/workflows/counter";
 
 test("a counter answers after its run() returned", async ({
-  request,
   insert,
+  probes: { engine },
 }) => {
   const counter = await insert(workflowRow, {
     fields: {
@@ -16,9 +17,7 @@ test("a counter answers after its run() returned", async ({
     result: { rounds: 2 },
   });
 
-  const response = await request.get(`/api/probes/counters/${counter.id}`);
-
-  expect(await response.json()).toEqual({
+  expect(await engine.get(Counter, counter.id).report()).toEqual({
     count: 1,
     rounds: 2,
     notes: ["echoed 1"],

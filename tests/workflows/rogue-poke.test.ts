@@ -1,19 +1,14 @@
 import { expect, test } from "@test/kit/test";
+import { Rogue } from "@test/kit/workflows/rogue";
 
 test("a run() that breaks a rule of the engine fails its call and writes nothing", async ({
-  request,
   db,
+  probes: { engine },
 }) => {
   for (const fault of ["two waits", "a foreign await"]) {
-    const response = await request.post(
-      "/api/probes/rogues/01960000-0000-7000-8000-000000000904/poke",
-      { data: { fault } }
-    );
-
-    expect({ fault, status: response.status() }).toEqual({
-      fault,
-      status: 500,
-    });
+    await expect(
+      engine.start(Rogue, "01960000-0000-7000-8000-000000000904", fault).poke()
+    ).rejects.toThrow();
   }
 
   expect(await db.query.workflowTable.findMany()).toEqual([]);

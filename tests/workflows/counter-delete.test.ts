@@ -1,12 +1,14 @@
 import { probeRow } from "@test/kit/factories/probe";
 import { workflowRow } from "@test/kit/factories/workflow";
 import { expect, test } from "@test/kit/test";
+import { Counter } from "@test/kit/workflows/counter";
 import { probeTable } from "@test/kit/workflows/probe-tables";
+import { eq } from "drizzle-orm";
 
 test("deleting a counter deletes its tree and its row in one transaction", async ({
-  request,
   db,
   insert,
+  probes: { engine },
 }) => {
   const counter = await insert(workflowRow, {});
 
@@ -19,9 +21,11 @@ test("deleting a counter deletes its tree and its row in one transaction", async
 
   await insert(probeRow, { id: counter.id });
 
-  const response = await request.delete(`/api/probes/counters/${counter.id}`);
+  await engine.transaction(async (unit) => {
+    await unit.delete(Counter, counter.id);
+    await unit.tx.delete(probeTable).where(eq(probeTable.id, counter.id));
+  });
 
-  expect(response.status()).toBe(204);
   expect(await db.query.workflowTable.findMany()).toEqual([]);
   expect(await db.select().from(probeTable)).toEqual([]);
 });

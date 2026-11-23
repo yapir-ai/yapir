@@ -2,13 +2,13 @@ import { probeRow } from "@test/kit/factories/probe";
 import { workflowRow } from "@test/kit/factories/workflow";
 import { holdRowLock, waitForLockWaiters } from "@test/kit/lock";
 import { expect, test } from "@test/kit/test";
+import { Counter } from "@test/kit/workflows/counter";
 import { probeCallTable } from "@test/kit/workflows/probe-tables";
 
 test("a counter whose deadline moves before the tick takes the lock keeps waiting", async ({
-  request,
   db,
   insert,
-  clock,
+  probes: { engine, clock },
 }) => {
   const now = clock.now.getTime();
 
@@ -30,17 +30,12 @@ test("a counter whose deadline moves before the tick takes the lock keeps waitin
 
   const release = await holdRowLock(db, "workflow", counter.id);
 
-  const extend = request.post(`/api/probes/counters/${counter.id}/extend`, {
-    data: { duration: 120_000 },
-  });
-
+  const extend = engine.get(Counter, counter.id).extend(120_000);
   await waitForLockWaiters(db, 1);
-  const tick = clock.tick();
+  const sweep = engine.sweep();
   await waitForLockWaiters(db, 2);
   await release();
-
-  expect((await extend).status()).toBe(204);
-  await tick;
+  await Promise.all([extend, sweep]);
 
   expect(await db.query.workflowTable.findMany()).toEqual([
     {

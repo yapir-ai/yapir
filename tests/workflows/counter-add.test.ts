@@ -2,26 +2,22 @@ import { probeRow } from "@test/kit/factories/probe";
 import { workflowRow } from "@test/kit/factories/workflow";
 import { holdRowLock, waitForLockWaiters } from "@test/kit/lock";
 import { expect, test } from "@test/kit/test";
+import { Counter } from "@test/kit/workflows/counter";
 import { probeCallTable, probeTable } from "@test/kit/workflows/probe-tables";
+import { WorkflowNotFoundError } from "@workflow";
 
 const counterId = "01960000-0000-7000-8000-000000000901";
 
 test("the first call starts the counter, and each call replays it", async ({
-  request,
   db,
-  clock,
+  probes: { engine, clock },
 }) => {
-  const first = await request.post(`/api/probes/counters/${counterId}/add`, {
-    data: { amount: 1, goal: 3 },
+  expect(await engine.start(Counter, counterId, 3).add(1)).toEqual({
+    count: 1,
   });
-
-  expect(await first.json()).toEqual({ count: 1 });
-
-  const second = await request.post(`/api/probes/counters/${counterId}/add`, {
-    data: { amount: 1, goal: 3 },
+  expect(await engine.start(Counter, counterId, 3).add(1)).toEqual({
+    count: 2,
   });
-
-  expect(await second.json()).toEqual({ count: 2 });
 
   const now = clock.now.getTime();
 
@@ -64,10 +60,9 @@ test("the first call starts the counter, and each call replays it", async ({
 });
 
 test("a counter that reaches its goal starts a helper, which echoes the greeting of the counter in the same call", async ({
-  request,
   db,
   insert,
-  clock,
+  probes: { engine, clock },
 }) => {
   const now = clock.now.getTime();
 
@@ -87,11 +82,7 @@ test("a counter that reaches its goal starts a helper, which echoes the greeting
 
   await insert(probeRow, { id: counterId, count: 1 });
 
-  const response = await request.post(`/api/probes/counters/${counterId}/add`, {
-    data: { amount: 1 },
-  });
-
-  expect(await response.json()).toEqual({ count: 2 });
+  expect(await engine.get(Counter, counterId).add(1)).toEqual({ count: 2 });
 
   const [counter, helper] = await db.query.workflowTable.findMany({
     orderBy: { type: "asc" },
@@ -164,10 +155,9 @@ test("a counter that reaches its goal starts a helper, which echoes the greeting
 });
 
 test("a counter announces that it reached its goal once, and not again when a later call replays it", async ({
-  request,
   db,
   insert,
-  clock,
+  probes: { engine, clock, activities },
 }) => {
   const now = clock.now.getTime();
 
@@ -188,10 +178,10 @@ test("a counter announces that it reached its goal once, and not again when a la
   await insert(probeRow, { id: counterId, count: 1 });
 
   for (const amount of [1, 1]) {
-    await request.post(`/api/probes/counters/${counterId}/add`, {
-      data: { amount },
-    });
+    await engine.get(Counter, counterId).add(amount);
   }
+
+  await Promise.all(activities);
 
   expect(await db.select().from(probeCallTable)).toEqual([
     { workflowId: counterId, text: "reached 2" },
@@ -199,10 +189,9 @@ test("a counter announces that it reached its goal once, and not again when a la
 });
 
 test("a call after the deadline leaves the counter waiting when the tick has not run", async ({
-  request,
   db,
   insert,
-  clock,
+  probes: { engine, clock },
 }) => {
   const now = clock.now.getTime();
 
@@ -222,11 +211,7 @@ test("a call after the deadline leaves the counter waiting when the tick has not
 
   await insert(probeRow, { id: counterId });
 
-  const response = await request.post(`/api/probes/counters/${counterId}/add`, {
-    data: { amount: 1 },
-  });
-
-  expect(await response.json()).toEqual({ count: 1 });
+  expect(await engine.get(Counter, counterId).add(1)).toEqual({ count: 1 });
 
   expect(await db.query.workflowTable.findMany()).toEqual([
     { ...counter, fields: { ...waiting, count: { value: 1 } } },
@@ -234,10 +219,9 @@ test("a call after the deadline leaves the counter waiting when the tick has not
 });
 
 test("two calls on one counter run one after the other", async ({
-  request,
   db,
   insert,
-  clock,
+  probes: { engine, clock },
 }) => {
   const now = clock.now.getTime();
 
@@ -260,18 +244,13 @@ test("two calls on one counter run one after the other", async ({
   const release = await holdRowLock(db, "workflow", counterId);
 
   const calls = [1, 2].map(
-    async () =>
-      await request.post(`/api/probes/counters/${counterId}/add`, {
-        data: { amount: 1 },
-      })
+    async () => await engine.get(Counter, counterId).add(1)
   );
 
   await waitForLockWaiters(db, 2);
   await release();
 
-  const [first, second] = await Promise.all(calls);
-
-  expect([await first!.json(), await second!.json()]).toEqual(
+  expect(await Promise.all(calls)).toEqual(
     expect.arrayContaining([{ count: 1 }, { count: 2 }])
   );
 
@@ -281,10 +260,9 @@ test("two calls on one counter run one after the other", async ({
 });
 
 test("a call fails and writes nothing", async ({
-  request,
   db,
   insert,
-  clock,
+  probes: { engine, clock },
 }) => {
   const now = clock.now.getTime();
 
@@ -325,23 +303,12 @@ test("a call fails and writes nothing", async ({
     ],
   });
 
-  for (const { id, status, body } of [
-    {
-      id: "01960000-0000-7000-8000-000000000999",
-      status: 404,
-      body: "Workflow counter 01960000-0000-7000-8000-000000000999 could not be found",
-    },
-    { id: changed.id, status: 500, body: "Internal Server Error" },
-    { id: reordered.id, status: 500, body: "Internal Server Error" },
-  ]) {
-    const response = await request.post(`/api/probes/counters/${id}/add`, {
-      data: { amount: 1 },
-    });
+  await expect(
+    engine.get(Counter, "01960000-0000-7000-8000-000000000999").add(1)
+  ).rejects.toBeInstanceOf(WorkflowNotFoundError);
 
-    expect({ status: response.status(), body: await response.text() }).toEqual({
-      status,
-      body,
-    });
+  for (const { id } of [changed, reordered]) {
+    await expect(engine.get(Counter, id).add(1)).rejects.toThrow();
   }
 
   expect(

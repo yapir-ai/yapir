@@ -12,7 +12,7 @@ type Handlers<W> = {
   ]: W[K];
 };
 
-export type Signals<W> = {
+type Signals<W> = {
   [K in keyof Handlers<W>]: Handlers<W>[K] extends (...args: infer Args) => void
     ? (...args: Args) => void
     : never;

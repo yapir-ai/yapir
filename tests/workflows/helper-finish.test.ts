@@ -1,13 +1,13 @@
 import { probeRow } from "@test/kit/factories/probe";
 import { workflowRow } from "@test/kit/factories/workflow";
 import { expect, test } from "@test/kit/test";
+import { Helper } from "@test/kit/workflows/helper";
 import { probeTable } from "@test/kit/workflows/probe-tables";
 
 test("the counter resumes in the commit where its helper returns, and continues as new", async ({
-  request,
   db,
   insert,
-  clock,
+  probes: { engine, clock },
 }) => {
   const now = clock.now.getTime();
   const counterId = "01960000-0000-7000-8000-000000000901";
@@ -84,9 +84,7 @@ test("the counter resumes in the commit where its helper returns, and continues 
 
   await insert(probeRow, { id: counterId, count: 2, echoed: 1 });
 
-  const response = await request.post(`/api/probes/helpers/${helperId}/finish`);
-
-  expect(response.status()).toBe(204);
+  await engine.get(Helper, helperId).finish();
 
   const continued = {
     ...waiting,

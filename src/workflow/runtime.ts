@@ -17,7 +17,7 @@ export type Message =
   | { kind: "run"; to: string; args: Json[] }
   | { kind: "signal"; to: string; method: string; args: Value[] };
 
-export type Command =
+type Command =
   | {
       of: "until";
       number: number;
