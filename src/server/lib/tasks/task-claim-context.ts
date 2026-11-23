@@ -4,7 +4,7 @@ import { modelProxyPath } from "@server/lib/executions/runner-path";
 import type { ModelProviderResolveOperation } from "@server/lib/model-providers/model-provider-resolve.operation";
 import { allowedHosts } from "@server/lib/network-policy/network-policy.dto";
 
-import type { TaskContext } from "../task.service";
+import type { TaskContext } from "./task.service";
 
 export async function claimContext(
   {

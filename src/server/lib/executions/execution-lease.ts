@@ -6,6 +6,3 @@ export const leaseDuration = 2 * 60_000;
 
 // The agent pulls at this interval, which renews the lease.
 export const pullInterval = 5000;
-
-export const expiresIn = (now: Date, duration: number) =>
-  new Date(now.getTime() + duration);

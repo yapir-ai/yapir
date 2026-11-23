@@ -7,7 +7,9 @@ import { modelProviderRow } from "@test/kit/factories/model-provider";
 import { projectRow } from "@test/kit/factories/project";
 import { taskRow } from "@test/kit/factories/task";
 import { taskEventRow } from "@test/kit/factories/task-event";
+import { workflowRow } from "@test/kit/factories/workflow";
 import type { inserter } from "@test/kit/insert";
+import { executionWorkflow, taskWorkflow } from "@test/kit/lifecycle";
 import { expect, test } from "@test/kit/test";
 
 const token = "execution-token";
@@ -48,7 +50,7 @@ async function insertClaimedTask(
     ...override.execution,
   });
 
-  return { task, execution };
+  return { automation, task, execution };
 }
 
 test("a pull delivers the pending events into the current turn", async ({
@@ -57,12 +59,17 @@ test("a pull delivers the pending events into the current turn", async ({
   insert,
   clock,
 }) => {
-  const { task, execution } = await insertClaimedTask(insert);
+  const { automation, task, execution } = await insertClaimedTask(insert);
 
   const pending = await insert(taskEventRow, {
     taskId: task.id,
     receivedAt: new Date("2026-09-01T09:59:30Z"),
   });
+
+  await insert(workflowRow, [
+    taskWorkflow(task, automation),
+    executionWorkflow(execution, [pending]),
+  ]);
 
   const response = await request.post("/api/runner/pull", {
     headers: { authorization: `Bearer ${token}` },
@@ -93,13 +100,15 @@ test("a pull after the end of the execution answers how it ended", async ({
   db,
   insert,
 }) => {
-  const { task, execution } = await insertClaimedTask(insert, {
+  const { automation, task, execution } = await insertClaimedTask(insert, {
     task: { state: "stopped", activeExecutionId: null },
     execution: {
       outcome: "stopped",
       endedAt: new Date("2026-09-01T09:59:30Z"),
     },
   });
+
+  await insert(workflowRow, taskWorkflow(task, automation));
 
   const response = await request.post("/api/runner/pull", {
     headers: { authorization: `Bearer ${token}` },

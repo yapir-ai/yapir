@@ -7,7 +7,9 @@ import { modelProviderRow } from "@test/kit/factories/model-provider";
 import { projectRow } from "@test/kit/factories/project";
 import { taskRow } from "@test/kit/factories/task";
 import { taskEventRow } from "@test/kit/factories/task-event";
+import { workflowRow } from "@test/kit/factories/workflow";
 import type { inserter } from "@test/kit/insert";
+import { executionWorkflow, taskWorkflow } from "@test/kit/lifecycle";
 import { expect, test } from "@test/kit/test";
 
 const token = "execution-token";
@@ -48,7 +50,7 @@ async function insertClaimedTask(
     ...override.execution,
   });
 
-  return { task, execution };
+  return { automation, task, execution };
 }
 
 test("a turn end acknowledges the turn's events and starts the next turn with the pending ones", async ({
@@ -57,7 +59,7 @@ test("a turn end acknowledges the turn's events and starts the next turn with th
   insert,
   clock,
 }) => {
-  const { task, execution } = await insertClaimedTask(insert);
+  const { automation, task, execution } = await insertClaimedTask(insert);
 
   const read = await insert(taskEventRow, {
     taskId: task.id,
@@ -70,6 +72,11 @@ test("a turn end acknowledges the turn's events and starts the next turn with th
     eventId: "github:github.com:delivery-1",
     receivedAt: new Date("2026-09-01T09:59:30Z"),
   });
+
+  await insert(workflowRow, [
+    taskWorkflow(task, automation),
+    executionWorkflow(execution, [read, pending]),
+  ]);
 
   const response = await request.post("/api/runner/turn-end", {
     headers: { authorization: `Bearer ${token}` },
@@ -104,7 +111,7 @@ test("a turn end without pending events ends the execution and rests the task", 
   insert,
   clock,
 }) => {
-  const { task, execution } = await insertClaimedTask(insert, {
+  const { automation, task, execution } = await insertClaimedTask(insert, {
     task: { consecutiveFailures: 2 },
   });
 
@@ -113,6 +120,11 @@ test("a turn end without pending events ends the execution and rests the task", 
     state: "delivered",
     executionId: execution.id,
   });
+
+  await insert(workflowRow, [
+    taskWorkflow(task, automation),
+    executionWorkflow(execution, [read]),
+  ]);
 
   const response = await request.post("/api/runner/turn-end", {
     headers: { authorization: `Bearer ${token}` },

@@ -7,7 +7,7 @@ import type { McpServerRefreshOperation } from "@server/lib/mcp-servers/mcp-serv
 import { scheduleEventType } from "@server/lib/schedules/schedule.trigger";
 import type { TaskPurgeOperation } from "@server/lib/tasks/task-purge.operation";
 import { purgeInterval, retention } from "@server/lib/tasks/task-retention";
-import type { TaskMachine } from "@server/lib/tasks/task.machine";
+import type { WorkflowEngine } from "@workflow";
 import { lt } from "drizzle-orm";
 
 // The MCP servers' tool snapshots and the GitLab webhooks are refreshed at 0, 6, 12 and 18 UTC.
@@ -16,7 +16,7 @@ const refreshInterval = 6 * 60 * 60_000;
 export function cronDispatch({
   db,
   eventProcessOperation,
-  taskMachine,
+  workflowEngine,
   mcpServerRefreshOperation,
   gitlabWebhookSync,
   taskPurgeOperation,
@@ -25,7 +25,7 @@ export function cronDispatch({
 }: {
   db: Db;
   eventProcessOperation: EventProcessOperation;
-  taskMachine: TaskMachine;
+  workflowEngine: WorkflowEngine;
   mcpServerRefreshOperation: McpServerRefreshOperation;
   gitlabWebhookSync: Promise<GitlabWebhookSync | undefined>;
   taskPurgeOperation: TaskPurgeOperation;
@@ -65,7 +65,7 @@ export function cronDispatch({
         type: scheduleEventType,
         payload: { scheduledTime },
       }),
-      taskMachine.expire(),
+      workflowEngine.sweep(),
     ];
 
     if (scheduledTime % refreshInterval === 0) {

@@ -58,9 +58,14 @@ import { eventFilterService } from "@server/lib/events/event-filter.service";
 import { eventListOperation } from "@server/lib/events/event-list.operation";
 import { eventProcessOperation } from "@server/lib/events/event-process.operation";
 import type { Dispatchers } from "@server/lib/executions/dispatcher";
+import { executionDispatchActivity } from "@server/lib/executions/execution-dispatch.activity";
+import type { ExecutionDispatchActivity } from "@server/lib/executions/execution-dispatch.activity";
 import { executionListOperation } from "@server/lib/executions/execution-list.operation";
 import { executionMessageCreateOperation } from "@server/lib/executions/execution-message-create.operation";
 import { executionMessageListOperation } from "@server/lib/executions/execution-message-list.operation";
+import { executionReleaseActivity } from "@server/lib/executions/execution-release.activity";
+import type { ExecutionReleaseActivity } from "@server/lib/executions/execution-release.activity";
+import { Execution } from "@server/lib/executions/execution.workflow";
 import { localDispatcher } from "@server/lib/executions/local.dispatcher";
 import { fixedIpInfoOperation } from "@server/lib/fixed-ip/fixed-ip-info.operation";
 import type { FixedIp } from "@server/lib/fixed-ip/fixed-ip.dto";
@@ -120,13 +125,14 @@ import { skillListOperation } from "@server/lib/skills/skill-list.operation";
 import { skillRestoreOperation } from "@server/lib/skills/skill-restore.operation";
 import { skillUpdateOperation } from "@server/lib/skills/skill-update.operation";
 import { skillService } from "@server/lib/skills/skill.service";
+import { taskLifecycle } from "@server/lib/tasks/task-lifecycle";
 import { taskListOperation } from "@server/lib/tasks/task-list.operation";
 import { taskMessageEvent } from "@server/lib/tasks/task-message.event";
 import { taskPurgeOperation } from "@server/lib/tasks/task-purge.operation";
 import { taskSessionInfoOperation } from "@server/lib/tasks/task-session-info.operation";
 import { taskSessionUpdateOperation } from "@server/lib/tasks/task-session-update.operation";
-import { taskMachine } from "@server/lib/tasks/task.machine";
 import { taskService } from "@server/lib/tasks/task.service";
+import { Task } from "@server/lib/tasks/task.workflow";
 import type {
   CapabilityDefinition,
   CapabilityRegistry,
@@ -144,6 +150,7 @@ import { webhookRestoreOperation } from "@server/lib/webhooks/webhook-restore.op
 import { webhookUpdateOperation } from "@server/lib/webhooks/webhook-update.operation";
 import { webhookEvents } from "@server/lib/webhooks/webhook.event";
 import { yapirCapabilities } from "@server/lib/yapir/yapir.capabilities";
+import { activity, workflowEngine } from "@workflow";
 import type { Resolver } from "awilix";
 import type { Files } from "files-sdk";
 
@@ -331,7 +338,34 @@ function createServices(
     mcpServerClient: asFunction(mcpServerClient),
     effectService: asFunction(effectService),
     taskService: asFunction(taskService),
-    taskMachine: asFunction(taskMachine),
+    taskLifecycle: asFunction(taskLifecycle),
+    executionDispatchActivity: asFunction(executionDispatchActivity),
+    executionReleaseActivity: asFunction(executionReleaseActivity),
+    workflowEngine: asFunction(
+      (services: {
+        db: Db;
+        clock: Clock;
+        executionContext: Pick<ExecutionContext, "waitUntil">;
+        executionDispatchActivity: ExecutionDispatchActivity;
+        executionReleaseActivity: ExecutionReleaseActivity;
+      }) =>
+        workflowEngine({
+          db: services.db,
+          clock: services.clock,
+          executionContext: services.executionContext,
+          workflows: { task: Task, execution: Execution },
+          activities: [
+            activity(
+              executionDispatchActivity,
+              services.executionDispatchActivity
+            ),
+            activity(
+              executionReleaseActivity,
+              services.executionReleaseActivity
+            ),
+          ],
+        })
+    ),
     eventFilterService: asFunction(eventFilterService),
     eventProcessOperation: asFunction(eventProcessOperation),
     migrationApplyOperation: asFunction(migrationApplyOperation),

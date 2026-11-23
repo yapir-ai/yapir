@@ -6,3 +6,5 @@ export const TaskEventStateSchema = z.enum([
   "delivered",
   "acknowledged",
 ]);
+
+export type TaskEventState = z.infer<typeof TaskEventStateSchema>;

@@ -20,6 +20,12 @@
 - Give Create and Update their own request DTOs, even when their fields currently match.
 - Soft-deletable resources mark `deletedAt` and restore via `POST /:id/restore`.
 - Delete is idempotent: deleting an absent resource succeeds with 204. Do not add an existence check, transaction, or explicit lock just to distinguish missing resources.
+- Give each backend module one kind, and name its file after it:
+  - A workflow, `*.workflow.ts`, is a long process on the engine of `src/workflow/`.
+  - An operation, `*.operation.ts`, is an atomic entry point: one call of a route, a tool or the cron. An operation does not call another operation.
+  - An activity, `*.activity.ts`, is a side effect of a workflow. Only a workflow calls it.
+  - A service, `*.service.ts`, is logic that several operations, workflows or activities share.
+- A caller above the operations can fan out: a webhook handler or the cron can call several operations.
 - Create an entity-oriented service only when multiple operations already share the same behavior. Grouping SDK calls or anticipating future reuse is not sufficient.
 - Define HTTP request schemas with Zod in the resource's DTO files and validate them at the route boundary with `validator` from `hono-openapi`. Operations receive validated data; business validation stays in the operation.
 - The OpenAPI document, `GET /api/openapi.json`, documents the API. It is generated from the authenticated routes: validators, `describeRoute` summaries and Zod descriptions. It is the single source of truth for the API reference, rendered by Scalar at `GET /api/docs`, and for the CLI, which derives its commands, flags and help from it.
