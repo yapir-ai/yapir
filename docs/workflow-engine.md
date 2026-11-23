@@ -1,6 +1,6 @@
 # Workflow engine
 
-The engine in `src/server/lib/workflows/` runs long processes durably on Postgres. [ADR 0008](adr/0008-workflow-engine-stores-fields-and-replays-run.md) records the design. The probe workflows of the tests, `tests/kit/workflows/counter.ts` and `tests/kit/workflows/helper.ts`, use each feature.
+The engine in `src/server/lib/workflows/` runs long processes durably on Postgres. The probe workflows of the tests, `tests/kit/workflows/counter.ts` and `tests/kit/workflows/helper.ts`, use each feature.
 
 ## The model
 
