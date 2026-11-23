@@ -6,6 +6,7 @@ COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --production --ignore-scripts
 COPY tsconfig.json ./
 COPY src/server src/server
+COPY src/workflow src/workflow
 COPY src/content src/content
 COPY migrations migrations
 COPY dist/client dist/client

@@ -1,10 +1,10 @@
-import type { Db, Transaction } from "@server/lib/db";
-import { workflowTable } from "@server/lib/db/schema";
 import { and, eq, inArray, lt } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { encode } from "./codec";
+import type { Database, Transaction } from "./database.types";
 import type { Instance } from "./runtime";
+import { workflowTable } from "./schema";
 
 export interface Target {
   type: string;
@@ -46,16 +46,19 @@ export async function insertRoot(
 }
 
 export async function load(tx: Transaction, id: string) {
-  const row = await tx.query.workflowTable.findFirst({ where: { id } });
+  const [row] = await tx
+    .select()
+    .from(workflowTable)
+    .where(eq(workflowTable.id, id));
 
   return row!;
 }
 
 export async function loadResult(tx: Transaction, id: string) {
-  const row = await tx.query.workflowTable.findFirst({
-    where: { id },
-    columns: { result: true },
-  });
+  const [row] = await tx
+    .select({ result: workflowTable.result })
+    .from(workflowTable)
+    .where(eq(workflowTable.id, id));
 
   return row!.result;
 }
@@ -95,7 +98,7 @@ export async function deleteTree(tx: Transaction, target: Target) {
 }
 
 export async function due(
-  db: Db,
+  db: Database,
   now: Date,
   types: string[]
 ): Promise<Target[]> {

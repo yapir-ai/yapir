@@ -1,6 +1,14 @@
 # Workflow engine
 
-The engine in `src/server/lib/workflows/` runs long processes durably on Postgres. The probe workflows of the tests, `tests/kit/workflows/counter.ts` and `tests/kit/workflows/helper.ts`, use each feature.
+The engine in `src/workflow/` runs long processes durably on Postgres. The probe workflows of the tests, `tests/kit/workflows/counter.ts` and `tests/kit/workflows/helper.ts`, use each feature.
+
+## The library
+
+`src/workflow/` is a library. It does not know Yapir, and the compiler refuses an import of the application in it.
+
+- Import the engine from `@workflow`. `src/workflow/index.ts` is the public surface, and the compiler refuses an import of another file.
+- Import the `workflow` table from `@workflow/schema`. The schema of the application exports it again, so that `bun db:generate` writes its migrations.
+- Give the engine a Drizzle database, a clock, `waitUntil`, the workflow classes and the activities: see `workflowEngine` in `src/workflow/engine.ts`.
 
 ## The model
 
@@ -22,7 +30,7 @@ A turn is one input on one tree of instances, in one transaction: a handler call
 
 ## Handlers and signals
 
-- `engine.get(Class, id).handler(...)` calls a handler in its own transaction and returns its reply after the commit. An absent instance gives `404 WORKFLOW_NOT_FOUND`.
+- `engine.get(Class, id).handler(...)` calls a handler in its own transaction and returns its reply after the commit. An absent instance throws `WorkflowNotFoundError`.
 - `engine.start(Class, id, ...runArgs).handler(...)` creates the instance at the first call when it is absent, runs `run()` to its first await, then calls the handler. Only a root workflow can start from a route.
 - `engine.transaction(async ({ tx, get, start, delete }) => ...)` runs several calls and your own statements in one transaction. `delete` removes the tree of a root. It does not remove the rows of `rows()`.
 - In a workflow, `this.start(Class, ...runArgs)` starts a child from `run()`. A call on `this.parent` or on a child handle is a signal: it has no reply, and it runs later in the same turn, in order.

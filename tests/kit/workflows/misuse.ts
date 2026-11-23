@@ -1,7 +1,5 @@
-import { activity, inject } from "@server/lib/workflows/activity";
-import type { WorkflowEngine } from "@server/lib/workflows/engine";
-import { update, upsert } from "@server/lib/workflows/projection";
-import type { Updates } from "@server/lib/workflows/workflow.types";
+import { activity, inject, update, upsert } from "@workflow";
+import type { Updates, WorkflowEngine } from "@workflow";
 
 import { Counter } from "./counter";
 import { Helper } from "./helper";

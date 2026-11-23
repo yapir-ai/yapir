@@ -1,5 +1,5 @@
-import { workflowTable } from "@server/lib/db/schema";
-import type { WorkflowSelect } from "@server/lib/db/schema";
+import { workflowTable } from "@workflow/schema";
+import type { WorkflowSelect } from "@workflow/schema";
 
 export function workflowRow(override: Partial<WorkflowSelect>): WorkflowSelect {
   return {

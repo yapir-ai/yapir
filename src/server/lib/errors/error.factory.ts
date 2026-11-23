@@ -80,7 +80,6 @@ const ErrorCodes = {
     "This Organization Admin is designated by the instance configuration",
   PROJECT_MEMBER_EXISTS: "This user is already a member of this project",
   PROJECT_MEMBER_NOT_FOUND: "Project member could not be found",
-  WORKFLOW_NOT_FOUND: "Workflow could not be found",
 } as const satisfies Record<string, string>;
 
 export type ErrorCode = keyof typeof ErrorCodes;

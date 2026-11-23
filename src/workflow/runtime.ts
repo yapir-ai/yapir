@@ -1,7 +1,7 @@
-import type { Transaction } from "@server/lib/db";
 import { v7 as uuidv7 } from "uuid";
 
 import type { Activity } from "./activity";
+import type { Transaction } from "./database.types";
 import { handle } from "./handle";
 import type { Extra, Send } from "./handle";
 import type { Row } from "./projection";

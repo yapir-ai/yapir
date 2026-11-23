@@ -1,4 +1,4 @@
-import { Workflow } from "@server/lib/workflows/workflow";
+import { Workflow } from "@workflow";
 
 export class Witness extends Workflow {
   items: string[] = [];

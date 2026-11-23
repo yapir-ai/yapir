@@ -1,5 +1,4 @@
-import { update } from "@server/lib/workflows/projection";
-import { Workflow } from "@server/lib/workflows/workflow";
+import { update, Workflow } from "@workflow";
 
 import type { Counter } from "./counter";
 import { probeTable } from "./probe-tables";

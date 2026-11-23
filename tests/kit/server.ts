@@ -1,9 +1,8 @@
 import { cloudflareWorker } from "@server/cloudflare";
 import type { Clock } from "@server/lib/clock/clock";
 import { relations } from "@server/lib/db";
-import { activity } from "@server/lib/workflows/activity";
-import { workflowEngine } from "@server/lib/workflows/engine";
-import type { WorkflowEngine } from "@server/lib/workflows/engine";
+import { activity, workflowEngine, WorkflowNotFoundError } from "@workflow";
+import type { WorkflowEngine } from "@workflow";
 import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -86,6 +85,10 @@ export default {
       c.set("engine", engine);
       await nextMiddleware();
       await close();
+
+      if (c.error instanceof WorkflowNotFoundError) {
+        c.res = c.body(c.error.message, 404);
+      }
     })
     .post("/api/probes/counters/:id/add", async (c) => {
       const { amount, goal } = await c.req.json<{

@@ -1,10 +1,7 @@
 import { setImmediate } from "node:timers/promises";
 
-import type { Clock } from "@server/lib/clock/clock";
-import type { Transaction } from "@server/lib/db";
-import { notFound } from "@server/lib/errors/error.factory";
-
 import { encode, install } from "./codec";
+import type { Transaction } from "./database.types";
 import { write } from "./projection";
 import { create, journalMismatch } from "./runtime";
 import type {
@@ -25,6 +22,11 @@ import type {
 import { insertRoot, load, loadResult, lockRoot, save } from "./store";
 import type { Target } from "./store";
 import type { Workflow } from "./workflow";
+import { WorkflowNotFoundError } from "./workflow-not-found.error";
+
+export interface Clock {
+  readonly now: Date;
+}
 
 export interface Context {
   readonly tx: Transaction;
@@ -52,7 +54,7 @@ export async function turn(
       return undefined;
     }
 
-    throw notFound("WORKFLOW_NOT_FOUND");
+    throw new WorkflowNotFoundError(target.type, target.id);
   }
 
   const session: Session = {

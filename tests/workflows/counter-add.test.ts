@@ -329,11 +329,7 @@ test("a call fails and writes nothing", async ({
     {
       id: "01960000-0000-7000-8000-000000000999",
       status: 404,
-      body: JSON.stringify({
-        title: "WORKFLOW_NOT_FOUND",
-        status: 404,
-        detail: "Workflow could not be found",
-      }),
+      body: "Workflow counter 01960000-0000-7000-8000-000000000999 could not be found",
     },
     { id: changed.id, status: 500, body: "Internal Server Error" },
     { id: reordered.id, status: 500, body: "Internal Server Error" },

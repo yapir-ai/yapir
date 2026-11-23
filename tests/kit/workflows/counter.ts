@@ -1,7 +1,5 @@
-import { inject } from "@server/lib/workflows/activity";
-import { upsert } from "@server/lib/workflows/projection";
-import { Workflow } from "@server/lib/workflows/workflow";
-import type { Child } from "@server/lib/workflows/workflow.types";
+import { inject, upsert, Workflow } from "@workflow";
+import type { Child } from "@workflow";
 
 import { Helper } from "./helper";
 import { probeAnnounceOperation } from "./probe-announce.operation";

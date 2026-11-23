@@ -1,8 +1,9 @@
-import type { Transaction } from "@server/lib/db";
 import { and, eq, getTableColumns, getTableName } from "drizzle-orm";
 import type { InferInsertModel } from "drizzle-orm";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import type { PgTable } from "drizzle-orm/pg-core";
+
+import type { Transaction } from "./database.types";
 
 export interface Row {
   readonly key: string;
