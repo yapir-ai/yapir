@@ -37,7 +37,7 @@ Put what changes between the automations of one agent, such as the repository to
 
 The agent can ignore an instruction. It cannot use a capability that the automation does not give. Give each automation only the tools that its task needs, such as the read tools of an observability MCP server.
 
-Prefer the scoped capabilities. A scoped read reaches the issues and change requests of the tasks of the automation, so the agent finds its own work without a search. Give an unscoped capability only when the task needs items outside this scope.
+Prefer the scoped capabilities. A scoped read reaches only the work of the automation: the issues and change requests of its tasks, or its tasks and its configuration. The agent thus finds its own work without a search. Give an unscoped capability only when the task needs items outside this scope.
 
 ## Deliver a change request or an issue
 

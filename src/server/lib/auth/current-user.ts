@@ -1,4 +1,5 @@
 import type { Db } from "@server/lib/db";
+import type { ProjectMemberSelect } from "@server/lib/db/schema";
 import { forbidden, unauthorized } from "@server/lib/errors/error.factory";
 import { isAPIError } from "better-auth/api";
 
@@ -7,8 +8,25 @@ import {
   isOrganizationAdmin,
   readableProjects as readableProjectsRule,
 } from "./access";
-import type { ProjectAccess } from "./access";
+import type { ProjectAccess, ProjectFilter } from "./access";
 import type { SessionAuth } from "./auth";
+
+type SessionUser = NonNullable<
+  Awaited<ReturnType<SessionAuth["api"]["getSession"]>>
+>["user"];
+
+export interface CurrentUser {
+  get: () => Promise<SessionUser>;
+  requireAdmin: () => Promise<void>;
+  projectMember: (
+    projectId: string
+  ) => Promise<ProjectMemberSelect | undefined>;
+  hasProjectAccess: (
+    access: ProjectAccess,
+    projectId: string
+  ) => Promise<boolean>;
+  readableProjects: () => Promise<ProjectFilter>;
+}
 
 export function currentUser({
   sessionAuth,
@@ -18,7 +36,7 @@ export function currentUser({
   sessionAuth: SessionAuth;
   db: Db;
   headers: Headers;
-}) {
+}): CurrentUser {
   const session = resolveSession();
 
   // An invalid or revoked API key resolves no session.
@@ -80,5 +98,3 @@ export function currentUser({
     readableProjects,
   };
 }
-
-export type CurrentUser = ReturnType<typeof currentUser>;

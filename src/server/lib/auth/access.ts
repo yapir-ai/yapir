@@ -2,6 +2,7 @@ import {
   OrganizationRoleSchema,
   ProjectRoleSchema,
 } from "@server/lib/auth/role.dto";
+import type { Db } from "@server/lib/db";
 import type {
   ProjectMemberSelect,
   SkillSelect,
@@ -10,6 +11,10 @@ import type {
 import { EmptyFilter } from "drizzle-orm";
 
 export type ProjectAccess = "read" | "write";
+
+export type ProjectFilter = NonNullable<
+  NonNullable<Parameters<Db["query"]["projectTable"]["findMany"]>[0]>["where"]
+>;
 
 export function isOrganizationAdmin(user: Pick<UserSelect, "role">) {
   return user.role === OrganizationRoleSchema.enum.Admin;
@@ -31,10 +36,12 @@ export function hasProjectAccess(
 }
 
 // The read rule above as a project filter for relational queries: an empty filter lets Organization Admins read every project.
-export function readableProjects(user: Pick<UserSelect, "id" | "role">) {
+export function readableProjects(
+  user: Pick<UserSelect, "id" | "role">
+): ProjectFilter {
   return {
     members: isOrganizationAdmin(user) ? EmptyFilter : { userId: user.id },
-  } as const;
+  };
 }
 
 export function canWriteSkill(

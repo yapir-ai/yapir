@@ -13,6 +13,7 @@ import { truncate } from "./database";
 import { userRow } from "./factories/user";
 import { github } from "./github";
 import { inserter } from "./insert";
+import { mcp } from "./mcp";
 import { oidc } from "./oidc";
 
 export type TestDb = Db & { $client: Pool };
@@ -24,6 +25,7 @@ export const test = base.extend<{
   clock: ReturnType<typeof serverClock>;
   github: ReturnType<typeof github>;
   oidc: ReturnType<typeof oidc>;
+  mcp: ReturnType<typeof mcp>;
   outsider: APIRequestContext;
 }>({
   // oxlint-disable-next-line eslint/no-empty-pattern Playwright reads a fixture's dependencies from its destructuring pattern.
@@ -56,6 +58,9 @@ export const test = base.extend<{
     const identityProvider = oidc(instance.env.OIDC_DISCOVERY_URL!);
     await identityProvider.reset();
     await use(identityProvider);
+  },
+  mcp: async ({ baseURL }, use) => {
+    await use(mcp(baseURL!));
   },
   outsider: async ({ browser, db, insert, instance }, use) => {
     const user = await insert(userRow, {

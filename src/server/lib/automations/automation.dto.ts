@@ -25,7 +25,7 @@ const capabilityGrantSchema = z.object({
   unscoped: z
     .boolean()
     .describe(
-      "For a scopable capability: whether its tools reach every resource of the project's repositories, or of the Jira site, rather than only the resources associated with the Automation's Tasks"
+      "For a scopable capability: whether its tools reach every resource of the project, of its repositories or of the Jira site, rather than only the resources of the Automation and its Tasks"
     ),
 });
 
