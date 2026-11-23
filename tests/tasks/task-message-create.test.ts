@@ -109,7 +109,6 @@ test("a message to an idle task queues a new execution", async ({
         startedAt: null,
         endedAt: null,
       }),
-      claimHash: expect.any(String),
     },
   ]);
 

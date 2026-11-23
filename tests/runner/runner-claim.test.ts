@@ -1,5 +1,6 @@
+import type { Instance } from "@scripts/instance";
 import type { ExecutionSelect, TaskSelect } from "@server/lib/db/schema";
-import { hashSecret } from "@server/lib/executions/execution-secret";
+import { deriveClaimId } from "@server/lib/executions/execution-secret";
 import { agentRow } from "@test/kit/factories/agent";
 import { automationRow } from "@test/kit/factories/automation";
 import { executionRow } from "@test/kit/factories/execution";
@@ -9,7 +10,8 @@ import { taskRow } from "@test/kit/factories/task";
 import type { inserter } from "@test/kit/insert";
 import { expect, test } from "@test/kit/test";
 
-const claimId = "execution-claim-id";
+const claimIdOf = (instance: Instance, execution: ExecutionSelect) =>
+  deriveClaimId(execution.id, { ENCRYPTION_KEY: instance.env.ENCRYPTION_KEY! });
 
 async function insertQueuedTask(
   insert: ReturnType<typeof inserter>,
@@ -43,7 +45,6 @@ async function insertQueuedTask(
     taskId: task.id,
     outcome: null,
     dispatcher: "local",
-    claimHash: hashSecret(claimId),
     leaseExpiresAt: new Date("2026-09-01T10:05:00Z"),
     startedAt: null,
     endedAt: null,
@@ -54,6 +55,7 @@ async function insertQueuedTask(
 }
 
 test("a runner claims its queued execution and receives the work", async ({
+  instance,
   request,
   db,
   insert,
@@ -63,7 +65,10 @@ test("a runner claims its queued execution and receives the work", async ({
     await insertQueuedTask(insert);
 
   const response = await request.post("/api/runner/claim", {
-    data: { executionId: execution.id, claimId },
+    data: {
+      executionId: execution.id,
+      claimId: claimIdOf(instance, execution),
+    },
   });
 
   expect(await response.json()).toEqual({
@@ -102,6 +107,7 @@ test("a runner claims its queued execution and receives the work", async ({
 });
 
 test("a claim of a stopped execution answers how it ended", async ({
+  instance,
   request,
   db,
   insert,
@@ -115,7 +121,10 @@ test("a claim of a stopped execution answers how it ended", async ({
   });
 
   const response = await request.post("/api/runner/claim", {
-    data: { executionId: execution.id, claimId },
+    data: {
+      executionId: execution.id,
+      claimId: claimIdOf(instance, execution),
+    },
   });
 
   expect(await response.json()).toEqual({ claimed: false, outcome: "stopped" });

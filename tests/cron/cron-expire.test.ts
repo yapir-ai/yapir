@@ -66,7 +66,6 @@ test("an execution that no runner claimed in time fails, and the task retries it
         startedAt: null,
         endedAt: null,
       }),
-      claimHash: expect.any(String),
     },
   ]);
 

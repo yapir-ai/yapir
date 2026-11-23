@@ -1,0 +1,25 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "2bb53892-eb78-40a7-a594-f9d5c4bbd5eb",
+  "prevIds": ["77e11183-c256-43fe-a156-75f51487c4f4"],
+  "footprints": [
+    {
+      "statementType": "drop_column",
+      "statementTarget": ["column", "public", "execution", "claim_hash"],
+      "writes": [
+        "s|col|public.execution.claim_hash",
+        "n|col|public.execution.claim_hash",
+        "e|col|public.execution.claim_hash"
+      ],
+      "reads": ["n|tbl|public.execution", "n|sch|public"]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "drop",
+      "key": "columns\u0000[\"public\",\"execution\",\"claim_hash\"]"
+    }
+  ]
+}

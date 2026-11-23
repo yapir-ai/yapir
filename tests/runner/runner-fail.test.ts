@@ -96,7 +96,6 @@ test("a failure gives the turn's events back to the task, which retries them", a
         startedAt: null,
         endedAt: null,
       }),
-      claimHash: expect.any(String),
     },
   ]);
 

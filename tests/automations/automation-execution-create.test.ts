@@ -83,7 +83,6 @@ test("starting an execution of a disabled automation queues it in a new task", a
         startedAt: null,
         endedAt: null,
       }),
-      claimHash: expect.any(String),
     },
   ]);
 });
