@@ -22,6 +22,8 @@
       "@server/*": ["./src/server/*"],
       "@runner": ["./src/runner"],
       "@runner/*": ["./src/runner/*"],
+      "@workflow": ["./src/workflow"],
+      "@workflow/schema": ["./src/workflow/schema.ts"],
       "@test/*": ["./tests/*"],
       "@scripts/*": ["./scripts/*"]
     }
@@ -31,6 +33,7 @@
     { "path": "./src/web" },
     { "path": "./src/server" },
     { "path": "./src/runner" },
+    { "path": "./src/workflow" },
     { "path": "./cli" },
     { "path": "./tests" },
     { "path": "./scripts" },

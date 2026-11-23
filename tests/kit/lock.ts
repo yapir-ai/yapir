@@ -4,7 +4,7 @@ import type { TestDb } from "./test";
 
 export async function holdRowLock(
   db: TestDb,
-  table: "task" | "automation",
+  table: "task" | "automation" | "workflow",
   id: string
 ) {
   const holder = await db.$client.connect();

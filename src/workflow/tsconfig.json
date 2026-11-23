@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../node_modules/.tmp/tsconfig.workflow.tsbuildinfo",
+    "lib": ["ES2023"],
+    "types": ["bun"],
+    "paths": {}
+  },
+  "include": ["."]
+}

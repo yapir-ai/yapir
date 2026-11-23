@@ -3,6 +3,7 @@
 !bun.lock
 !tsconfig.json
 !src/server
+!src/workflow
 !src/content
 !migrations
 !dist/client

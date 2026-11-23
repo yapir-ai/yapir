@@ -11,6 +11,7 @@ The tests run against Yapir as a black box, with Playwright Test. `bun run test`
 
 - The SUT is the instance that `tests/kit/global-setup.ts` starts, with its own database. Dispatchers, runners and sandboxes are inside the box. Its Worker, `tests/kit/server.ts`, adds the routes that set the time of the server and run its cron.
 - A test enters through one seam, the widest: the UI when the operation has one, else the API, a webhook or the cron.
+- The seam of a library is its public API. `tests/workflows/` calls `@workflow` in the test process, on the test database.
 - A test exits through the database, read by key, through the requests that simulators received, or through the screen.
 - The Given is rows inserted in the database with the factories of `tests/kit/factories/`. Each test then fails only for its own operation.
 
@@ -31,6 +32,7 @@ The fixtures of `tests/kit/test.ts` start only when a test names them:
 - `outsider`: an API context signed in as an Organization User who is a member of no Project.
 - `clock`: fixes the time of the server at the start of the test. Read `clock.now`, move the time with `clock.set` and `clock.skip`, and run the cron at that time with `clock.tick`. A test without it sees the system time.
 - `github`: `github.send(name, payload, deliveryId)` delivers a webhook, signed with the secret of the GitHub Connection of the Given.
+- `probes`: an engine of `@workflow` with the probe workflows of `tests/kit/workflows/`, its clock, and the promises of its activities.
 - `oidc`: the identity provider of the instance. `oidc.requests()` lists the paths that it received since the start of the test, and `oidc.origin` is its URL.
 
 ## Factories

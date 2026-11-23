@@ -622,3 +622,5 @@ export const taskAssociationTable = pgTable(
     index().on(table.taskId),
   ]
 );
+
+export { workflowTable } from "@workflow/schema";
