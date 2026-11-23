@@ -7,7 +7,9 @@ import { modelProviderRow } from "@test/kit/factories/model-provider";
 import { projectRow } from "@test/kit/factories/project";
 import { taskRow } from "@test/kit/factories/task";
 import { taskEventRow } from "@test/kit/factories/task-event";
+import { workflowRow } from "@test/kit/factories/workflow";
 import type { inserter } from "@test/kit/insert";
+import { executionWorkflow, taskWorkflow } from "@test/kit/lifecycle";
 import { expect, test } from "@test/kit/test";
 
 const token = "execution-token";
@@ -48,7 +50,7 @@ async function insertClaimedTask(
     ...override.execution,
   });
 
-  return { task, execution };
+  return { automation, task, execution };
 }
 
 test("a failure gives the turn's events back to the task, which retries them", async ({
@@ -57,13 +59,18 @@ test("a failure gives the turn's events back to the task, which retries them", a
   insert,
   clock,
 }) => {
-  const { task, execution } = await insertClaimedTask(insert);
+  const { automation, task, execution } = await insertClaimedTask(insert);
 
   const unread = await insert(taskEventRow, {
     taskId: task.id,
     state: "delivered",
     executionId: execution.id,
   });
+
+  await insert(workflowRow, [
+    taskWorkflow(task, automation),
+    executionWorkflow(execution, [unread]),
+  ]);
 
   const response = await request.post("/api/runner/fail", {
     headers: { authorization: `Bearer ${token}` },
@@ -130,7 +137,7 @@ test.describe("a failure rests the task", () => {
 
   for (const { name, consecutiveFailures, event, returned, state } of cases) {
     test(name, async ({ request, db, insert, clock }) => {
-      const { task, execution } = await insertClaimedTask(insert, {
+      const { automation, task, execution } = await insertClaimedTask(insert, {
         task: { consecutiveFailures },
       });
 
@@ -139,6 +146,11 @@ test.describe("a failure rests the task", () => {
         state: event,
         executionId: execution.id,
       });
+
+      await insert(workflowRow, [
+        taskWorkflow(task, automation),
+        executionWorkflow(execution, [received]),
+      ]);
 
       await request.post("/api/runner/fail", {
         headers: { authorization: `Bearer ${token}` },
@@ -176,13 +188,15 @@ test("a failure reported after the end of the execution answers how it ended", a
   db,
   insert,
 }) => {
-  const { task, execution } = await insertClaimedTask(insert, {
+  const { automation, task, execution } = await insertClaimedTask(insert, {
     task: { state: "stopped", activeExecutionId: null },
     execution: {
       outcome: "stopped",
       endedAt: new Date("2026-09-01T09:59:30Z"),
     },
   });
+
+  await insert(workflowRow, taskWorkflow(task, automation));
 
   const response = await request.post("/api/runner/fail", {
     headers: { authorization: `Bearer ${token}` },

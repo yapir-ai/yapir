@@ -1,4 +1,5 @@
 import type { RepositorySelect } from "@server/lib/db/schema";
+import { hashSecret } from "@server/lib/executions/execution-secret";
 import { agentRow } from "@test/kit/factories/agent";
 import { automationRow } from "@test/kit/factories/automation";
 import { effectRow } from "@test/kit/factories/effect";
@@ -11,7 +12,9 @@ import { repositoryRow } from "@test/kit/factories/repository";
 import { taskRow } from "@test/kit/factories/task";
 import { taskAssociationRow } from "@test/kit/factories/task-association";
 import { taskEventRow } from "@test/kit/factories/task-event";
+import { workflowRow } from "@test/kit/factories/workflow";
 import type { inserter } from "@test/kit/insert";
+import { executionWorkflow, taskWorkflow } from "@test/kit/lifecycle";
 import { holdRowLock, waitForLockWaiters } from "@test/kit/lock";
 import {
   pullRequestOpenedPayload,
@@ -194,6 +197,8 @@ test("a new commit on a pull request starts its task again", async ({
     executionId: finished.id,
   });
 
+  await insert(workflowRow, taskWorkflow(task, automation, [opened]));
+
   await github.send("pull_request", sent, "delivery-2");
 
   const executions = await db.query.executionTable.findMany({
@@ -327,9 +332,15 @@ test("an event on a busy task waits in its inbox", async ({
     id: runningId,
     taskId: task.id,
     outcome: null,
+    tokenHash: hashSecret("execution-token"),
     endedAt: null,
     leaseExpiresAt: new Date("2026-09-01T10:02:00Z"),
   });
+
+  await insert(workflowRow, [
+    taskWorkflow(task, automation),
+    executionWorkflow(running),
+  ]);
 
   await github.send("pull_request", sent, "delivery-2");
 
@@ -368,6 +379,7 @@ test("an automation does not start on the pull request that its agent opened", a
   const sent = pullRequestOpenedPayload(deliveredFor(repository, connection));
   const task = await insert(taskRow, { automationId: automation.id });
   const execution = await insert(executionRow, { taskId: task.id });
+  await insert(workflowRow, taskWorkflow(task, automation));
 
   await insert(effectRow, {
     automationId: automation.id,
@@ -402,6 +414,7 @@ test("an opened pull request that the agent associates at the same time starts n
 
   const sent = pullRequestOpenedPayload(deliveredFor(repository, connection));
   const owner = await insert(taskRow, { automationId: automation.id });
+  await insert(workflowRow, taskWorkflow(owner, automation));
 
   const release = await holdRowLock(db, "automation", automation.id);
   const delivery = github.send("pull_request", sent, "delivery-1");

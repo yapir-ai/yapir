@@ -6,6 +6,8 @@ import { modelProviderRow } from "@test/kit/factories/model-provider";
 import { projectRow } from "@test/kit/factories/project";
 import { taskRow } from "@test/kit/factories/task";
 import { taskEventRow } from "@test/kit/factories/task-event";
+import { workflowRow } from "@test/kit/factories/workflow";
+import { executionWorkflow, taskWorkflow } from "@test/kit/lifecycle";
 import { holdRowLock, waitForLockWaiters } from "@test/kit/lock";
 import { expect, test } from "@test/kit/test";
 
@@ -42,6 +44,11 @@ test("an execution that no runner claimed in time fails, and the task retries it
   });
 
   const pending = await insert(taskEventRow, { taskId: task.id });
+
+  await insert(workflowRow, [
+    taskWorkflow(task, automation),
+    executionWorkflow(unclaimed, [pending]),
+  ]);
 
   await clock.tick();
 
@@ -113,7 +120,12 @@ test("an expiry that waits for a pull leaves the execution that the pull renewed
     endedAt: null,
   });
 
-  const release = await holdRowLock(db, "task", task.id);
+  await insert(workflowRow, [
+    taskWorkflow(task, automation),
+    executionWorkflow(running),
+  ]);
+
+  const release = await holdRowLock(db, "workflow", task.id);
 
   const pull = request.post("/api/runner/pull", {
     headers: { authorization: "Bearer execution-token" },

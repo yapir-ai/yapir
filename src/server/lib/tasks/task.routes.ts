@@ -53,7 +53,7 @@ export const taskRoutes = hono()
     }),
     validator("param", TaskStopParams),
     async (c) => {
-      await c.var.container.taskMachine.stop(c.req.valid("param"));
+      await c.var.container.taskLifecycle.stop(c.req.valid("param"));
 
       return c.body(null, 204);
     }

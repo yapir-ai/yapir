@@ -1,4 +1,4 @@
-import type { TaskMachine } from "@server/lib/tasks/task.machine";
+import type { TaskLifecycle } from "@server/lib/tasks/task-lifecycle";
 import type { TaskService } from "@server/lib/tasks/task.service";
 
 import type {
@@ -12,11 +12,11 @@ import type {
 export function eventProcessOperation({
   eventRegistry,
   taskService,
-  taskMachine,
+  taskLifecycle,
 }: {
   eventRegistry: Promise<EventRegistry>;
   taskService: TaskService;
-  taskMachine: TaskMachine;
+  taskLifecycle: TaskLifecycle;
 }) {
   async function execute(notification: EventNotification) {
     const definition = (await eventRegistry).get(notification.type);
@@ -34,7 +34,7 @@ export function eventProcessOperation({
     const accepted = [];
 
     for (const { automationId, task } of targets) {
-      const { id: taskId } = await accept(automationId, event, task);
+      const taskId = await accept(automationId, event, task);
       accepted.push({ taskId, eventId: event.id });
     }
 
@@ -84,14 +84,12 @@ export function eventProcessOperation({
       await taskService.rememberPresentations(associated.id, event.resources);
     }
 
-    const { task } = await taskMachine.accept(
+    return await taskLifecycle.accept(
       associated
         ? { taskId: associated.id }
         : { automationId, resources: event.resources },
       event
     );
-
-    return task;
   }
 
   return { execute };

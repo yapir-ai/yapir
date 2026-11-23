@@ -1,8 +1,16 @@
 import type { ExecutionSelect } from "@server/lib/db/schema";
-import type { ExecutionUsageDto } from "@server/lib/executions/execution-pull.dto";
 import type { ModelProviderResolveOperation } from "@server/lib/model-providers/model-provider-resolve.operation";
 
-import type { UsageColumns } from "./attempt";
+import type { ExecutionUsageDto } from "./execution-pull.dto";
+
+export type UsageColumns = Pick<
+  ExecutionSelect,
+  | "inputTokens"
+  | "outputTokens"
+  | "cacheReadTokens"
+  | "cacheWriteTokens"
+  | "cost"
+>;
 
 // It reads the model catalog: run it outside the transaction.
 export async function usageColumns(

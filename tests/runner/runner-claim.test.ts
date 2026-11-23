@@ -7,7 +7,9 @@ import { executionRow } from "@test/kit/factories/execution";
 import { modelProviderRow } from "@test/kit/factories/model-provider";
 import { projectRow } from "@test/kit/factories/project";
 import { taskRow } from "@test/kit/factories/task";
+import { workflowRow } from "@test/kit/factories/workflow";
 import type { inserter } from "@test/kit/insert";
+import { executionWorkflow, taskWorkflow } from "@test/kit/lifecycle";
 import { expect, test } from "@test/kit/test";
 
 const claimIdOf = (instance: Instance, execution: ExecutionSelect) =>
@@ -50,6 +52,11 @@ async function insertQueuedTask(
     endedAt: null,
     ...override.execution,
   });
+
+  await insert(workflowRow, [
+    taskWorkflow(task, automation),
+    ...(execution.outcome ? [] : [executionWorkflow(execution)]),
+  ]);
 
   return { agent, automation, project, task, execution };
 }

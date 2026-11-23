@@ -9,7 +9,9 @@ import { repositoryRow } from "@test/kit/factories/repository";
 import { taskRow } from "@test/kit/factories/task";
 import { taskAssociationRow } from "@test/kit/factories/task-association";
 import { taskEventRow } from "@test/kit/factories/task-event";
+import { workflowRow } from "@test/kit/factories/workflow";
 import type { inserter } from "@test/kit/insert";
+import { taskWorkflow } from "@test/kit/lifecycle";
 import { holdRowLock, waitForLockWaiters } from "@test/kit/lock";
 import { expect, test } from "@test/kit/test";
 
@@ -55,6 +57,8 @@ async function insertTask(
     state: "acknowledged",
     executionId: finished.id,
   });
+
+  await insert(workflowRow, taskWorkflow(task, owner, [event]));
 
   return { project, task, finished, event };
 }
@@ -129,7 +133,7 @@ test("two messages at the same time to an idle task both queue on one execution"
 }) => {
   const { task } = await insertTask(insert);
 
-  const release = await holdRowLock(db, "task", task.id);
+  const release = await holdRowLock(db, "workflow", task.id);
 
   const responses = ["first", "second"].map(
     async (message) =>

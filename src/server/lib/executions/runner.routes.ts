@@ -16,7 +16,7 @@ export const runnerRoutes = hono()
     runnerCallPath.claim,
     validator("json", ExecutionClaimRequest),
     async (c) =>
-      c.json(await c.var.container.taskMachine.claim(c.req.valid("json")))
+      c.json(await c.var.container.taskLifecycle.claim(c.req.valid("json")))
   )
   .post(
     runnerCallPath.pull,
@@ -24,7 +24,7 @@ export const runnerRoutes = hono()
     validator("json", ExecutionPullRequest),
     async (c) =>
       c.json(
-        await c.var.container.taskMachine.pull(
+        await c.var.container.taskLifecycle.pull(
           c.var.execution,
           c.req.valid("json")
         )
@@ -36,7 +36,7 @@ export const runnerRoutes = hono()
     validator("json", ExecutionPullRequest),
     async (c) =>
       c.json(
-        await c.var.container.taskMachine.endTurn(
+        await c.var.container.taskLifecycle.endTurn(
           c.var.execution,
           c.req.valid("json")
         )
@@ -48,7 +48,7 @@ export const runnerRoutes = hono()
     validator("json", ExecutionFailRequest),
     async (c) =>
       c.json(
-        await c.var.container.taskMachine.fail(
+        await c.var.container.taskLifecycle.fail(
           c.var.execution,
           c.req.valid("json")
         )
