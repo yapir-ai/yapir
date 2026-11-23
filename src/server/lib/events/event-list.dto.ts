@@ -8,6 +8,7 @@ import type { EventDefinition } from "./event-definition";
 export const EventListRequest = PaginationRequest.extend({
   taskId: IdFilter.optional(),
   projectId: IdFilter.optional(),
+  automationId: IdFilter.optional(),
   type: z
     .string()
     .trim()

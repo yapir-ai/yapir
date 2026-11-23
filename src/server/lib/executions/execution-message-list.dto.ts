@@ -7,6 +7,7 @@ import type { z } from "zod";
 export const ExecutionMessageListRequest = IdListRequest.extend({
   taskId: IdFilter.optional(),
   executionId: IdFilter.optional(),
+  automationId: IdFilter.optional(),
 });
 
 export type ExecutionMessageListRequestDto = z.infer<

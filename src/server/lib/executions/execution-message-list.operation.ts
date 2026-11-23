@@ -16,6 +16,7 @@ export function executionMessageListOperation({
     id,
     taskId,
     executionId,
+    automationId,
     offset,
     limit,
     order,
@@ -27,6 +28,7 @@ export function executionMessageListOperation({
         execution: {
           taskId: taskId ? { in: taskId } : EmptyFilter,
           task: {
+            automationId: automationId ? { in: automationId } : EmptyFilter,
             automation: {
               project: await currentUser.readableProjects(),
             },

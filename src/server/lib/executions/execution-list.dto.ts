@@ -10,6 +10,7 @@ import { ExecutionOutcomeSchema } from "./execution.dto";
 export const ExecutionListRequest = IdListRequest.extend({
   taskId: IdFilter.optional(),
   projectId: IdFilter.optional(),
+  automationId: IdFilter.optional(),
   outcome: singleOrArray(ExecutionOutcomeSchema)
     .optional()
     .describe("One or more outcomes: repeat the parameter for several"),

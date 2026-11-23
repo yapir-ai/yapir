@@ -17,6 +17,7 @@ export function executionListOperation({
     id,
     taskId,
     projectId,
+    automationId,
     outcome,
     active,
     latest,
@@ -31,6 +32,7 @@ export function executionListOperation({
         outcome: outcome ? { in: outcome } : EmptyFilter,
         AND: [{ outcome: active ? { isNull: true } : EmptyFilter }],
         task: {
+          automationId: automationId ? { in: automationId } : EmptyFilter,
           automation: {
             projectId: projectId ? { in: projectId } : EmptyFilter,
             project: await currentUser.readableProjects(),

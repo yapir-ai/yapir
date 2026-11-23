@@ -21,6 +21,7 @@ export function eventListOperation({
   async function execute({
     taskId,
     projectId,
+    automationId,
     type,
     distinct,
     order,
@@ -29,6 +30,7 @@ export function eventListOperation({
   }: EventListRequestDto) {
     const task = {
       id: taskId ? { in: taskId } : EmptyFilter,
+      automationId: automationId ? { in: automationId } : EmptyFilter,
       automation: {
         projectId: projectId ? { in: projectId } : EmptyFilter,
         project: await currentUser.readableProjects(),
