@@ -1,39 +1,40 @@
 import { constructing, record } from "./runtime";
 
-interface Operation<Args extends unknown[]> {
-  execute: (...args: Args) => Promise<void>;
-}
+type Effect = (...args: never[]) => Promise<void>;
 
-type Factory<Args extends unknown[]> = (deps: never) => Operation<Args>;
+type Factory<Activities> = (deps: never) => Activities;
 
 export interface Activity {
-  readonly operation: Factory<never>;
-  readonly instance: Operation<never>;
+  readonly factory: Factory<object>;
+  readonly instance: object;
 }
 
-export function activity<Args extends unknown[]>(
-  operation: Factory<Args>,
-  instance: NoInfer<Operation<Args>>
+export function activity<Activities extends object>(
+  factory: Factory<Activities>,
+  instance: NoInfer<Activities>
 ): Activity {
-  return { operation, instance };
+  return { factory, instance };
 }
 
-const performs = <Args extends unknown[]>(
+const comesFrom = <Activities extends object>(
   candidate: Activity,
-  operation: Factory<Args>
-): candidate is Activity & { instance: Operation<Args> } =>
-  candidate.operation === operation;
+  factory: Factory<Activities>
+): candidate is Activity & { instance: Activities } =>
+  candidate.factory === factory;
 
-export function inject<Args extends unknown[]>(operation: Factory<Args>) {
+export function inject<
+  Activities extends Record<Name, Effect>,
+  Name extends keyof Activities,
+>(factory: Factory<Activities>, name: Name) {
   const runtime = constructing();
 
-  return (...args: Args) => {
+  return (...args: Parameters<Activities[Name]>) => {
     record(runtime, async (activities) => {
       const scoped = activities.find((candidate) =>
-        performs(candidate, operation)
+        comesFrom(candidate, factory)
       );
 
-      await scoped!.instance.execute(...args);
+      await scoped!.instance[name](...args);
     });
   };
 }

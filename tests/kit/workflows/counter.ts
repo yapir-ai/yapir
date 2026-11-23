@@ -2,8 +2,8 @@ import { inject, upsert, Workflow } from "@workflow";
 import type { Child } from "@workflow";
 
 import { Helper } from "./helper";
-import { probeAnnounceOperation } from "./probe-announce.operation";
 import { probeTable } from "./probe-tables";
+import { probeActivities } from "./probe.activities";
 
 export class Counter extends Workflow {
   count = 0;
@@ -12,7 +12,7 @@ export class Counter extends Workflow {
   notes: string[] = [];
   helper?: Child<Helper>;
 
-  private readonly announce = inject(probeAnnounceOperation);
+  private readonly announce = inject(probeActivities, "announce");
 
   async run(goal: number) {
     if (!(await this.reach(goal))) {

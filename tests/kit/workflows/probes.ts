@@ -3,7 +3,7 @@ import { activity, workflowEngine } from "@workflow";
 import type { TestDb } from "../test";
 import { Counter } from "./counter";
 import { Helper } from "./helper";
-import { probeAnnounceOperation } from "./probe-announce.operation";
+import { probeActivities } from "./probe.activities";
 import { Rogue } from "./rogue";
 import { Witness } from "./witness";
 
@@ -25,9 +25,7 @@ export function probes(db: TestDb) {
       witness: Witness,
       rogue: Rogue,
     },
-    activities: [
-      activity(probeAnnounceOperation, probeAnnounceOperation({ db })),
-    ],
+    activities: [activity(probeActivities, probeActivities({ db }))],
   });
 
   return { engine, clock, activities };

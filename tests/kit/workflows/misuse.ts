@@ -3,11 +3,11 @@ import type { Updates, WorkflowEngine } from "@workflow";
 
 import { Counter } from "./counter";
 import { Helper } from "./helper";
-import { probeAnnounceOperation } from "./probe-announce.operation";
 import { probeTable } from "./probe-tables";
+import { probeActivities } from "./probe.activities";
 
-declare const operationOfAnotherActivity: {
-  execute: (count: number) => Promise<void>;
+declare const otherActivities: {
+  announce: (count: number) => Promise<void>;
 };
 
 export const counterHandlers: Record<keyof Updates<Counter>, true> = {
@@ -33,10 +33,13 @@ export async function misuse(engine: WorkflowEngine) {
   engine.start(Counter, "counter", "goal");
 
   // @ts-expect-error -- an activity argument of the wrong type
-  inject(probeAnnounceOperation)(42, "text");
+  inject(probeActivities, "announce")(42, "text");
 
-  // @ts-expect-error -- the activity does not match its operation
-  activity(probeAnnounceOperation, operationOfAnotherActivity);
+  // @ts-expect-error -- an activity that the factory does not give
+  inject(probeActivities, "retract");
+
+  // @ts-expect-error -- the activities do not match their factory
+  activity(probeActivities, otherActivities);
 
   // @ts-expect-error -- a column that the table does not have
   upsert(probeTable, { id: "probe", count: 0, rounds: 0, total: 0 });
