@@ -8,6 +8,7 @@ const taskTools = [
   "yapir_task_list",
   "yapir_event_list",
   "yapir_execution_list",
+  "yapir_execution_message_list",
   "yapir_execution_metrics",
   "yapir_effect_metrics",
 ];

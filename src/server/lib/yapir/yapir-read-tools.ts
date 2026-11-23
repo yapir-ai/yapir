@@ -15,6 +15,12 @@ import { EventListRequest } from "@server/lib/events/event-list.dto";
 import { eventListOperation } from "@server/lib/events/event-list.operation";
 import { ExecutionListRequest } from "@server/lib/executions/execution-list.dto";
 import { executionListOperation } from "@server/lib/executions/execution-list.operation";
+import { ExecutionMessageListRequest } from "@server/lib/executions/execution-message-list.dto";
+import { executionMessageListOperation } from "@server/lib/executions/execution-message-list.operation";
+import {
+  TranscriptBounds,
+  excerptMessage,
+} from "@server/lib/executions/transcript-excerpt";
 import { EffectMetricsRequest } from "@server/lib/metrics/effect-metrics.dto";
 import { effectMetricsOperation } from "@server/lib/metrics/effect-metrics.operation";
 import { ExecutionMetricsRequest } from "@server/lib/metrics/execution-metrics.dto";
@@ -30,6 +36,7 @@ import type {
   ToolContext,
 } from "@server/lib/tools/capability-definition";
 import { capabilityListOperation } from "@server/lib/tools/capability-list.operation";
+import type { UIMessage } from "ai";
 import { z } from "zod";
 
 // What a read needs. `currentUser` reads: the user for the Assistant, the execution's reader for an execution.
@@ -131,6 +138,28 @@ export const taskReadTools = {
     scoped: ownTasks,
     execute: async (services, request) =>
       await executionListOperation(services).execute(request),
+  }),
+  executionMessageList: readTool({
+    description:
+      "Read transcripts: the messages of the turns of executions, as excerpts. `omitted` counts the characters left out of an excerpt. Read with `order: asc` from the start, then read again by `id` with a higher `maxPartLength` or with `toolOutputs`.",
+    inputSchema: ExecutionMessageListRequest.extend(TranscriptBounds.shape),
+    scoped: ownTasks,
+    async execute(services, { maxPartLength, toolOutputs, ...request }) {
+      const { items } =
+        await executionMessageListOperation(services).execute(request);
+
+      return {
+        items: items.map(({ message, ...item }) => ({
+          ...item,
+          ...excerptMessage(
+            // SAFETY: Yapir records each message as a validated UI message.
+            // oxlint-disable-next-line typescript/no-unsafe-type-assertion
+            message as UIMessage,
+            { maxPartLength, toolOutputs }
+          ),
+        })),
+      };
+    },
   }),
   executionMetrics: readTool({
     description:
