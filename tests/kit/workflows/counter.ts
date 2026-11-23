@@ -2,8 +2,8 @@ import { inject, upsert, Workflow } from "@workflow";
 import type { Child } from "@workflow";
 
 import { Helper } from "./helper";
+import { probeAnnounceActivity } from "./probe-announce.activity";
 import { probeTable } from "./probe-tables";
-import { probeAnnounceActivity } from "./probe.activities";
 
 export class Counter extends Workflow {
   count = 0;

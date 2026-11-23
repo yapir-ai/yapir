@@ -3,7 +3,7 @@ import { activity, workflowEngine } from "@workflow";
 import type { TestDb } from "../test";
 import { Counter } from "./counter";
 import { Helper } from "./helper";
-import { probeAnnounceActivity } from "./probe.activities";
+import { probeAnnounceActivity } from "./probe-announce.activity";
 import { Rogue } from "./rogue";
 import { Witness } from "./witness";
 

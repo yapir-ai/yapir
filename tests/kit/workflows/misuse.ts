@@ -3,8 +3,8 @@ import type { Updates, WorkflowEngine } from "@workflow";
 
 import { Counter } from "./counter";
 import { Helper } from "./helper";
+import { probeAnnounceActivity } from "./probe-announce.activity";
 import { probeTable } from "./probe-tables";
-import { probeAnnounceActivity } from "./probe.activities";
 
 declare const anotherActivity: {
   execute: (count: number) => Promise<void>;
