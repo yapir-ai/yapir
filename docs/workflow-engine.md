@@ -42,7 +42,7 @@ A turn is one input on one tree of instances, in one transaction: a handler call
 
 ## Activities
 
-An activity is a side effect of a workflow. A factory gives a group of activities, as `tests/kit/workflows/probe.activities.ts` does. `inject(factory, name)` in a field initializer gives a function that records a call of the activity. Give the activities of the scope to the engine with `activity(factory, instance)`. The engine runs each recorded call once, after the commit, in `executionContext.waitUntil`. A call in a replayed part of `run()` has no effect. A failure does not reach the workflow, and the engine does not try again.
+An activity is a side effect of a workflow: a factory that gives an object with `execute`, as in `tests/kit/workflows/probe.activities.ts`. `inject(factory)` in a field initializer gives a function that records a call of the activity. Give the activity of the scope to the engine with `activity(factory, instance)`. The engine runs each recorded call once, after the commit, in `executionContext.waitUntil`. A call in a replayed part of `run()` has no effect. A failure does not reach the workflow, and the engine does not try again.
 
 ## Rows
 
