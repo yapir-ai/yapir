@@ -1,6 +1,10 @@
 import type { AppType } from "@server";
 import type { DispatchPayloadDto } from "@server/lib/executions/dispatch-payload.dto";
 import type { ExecutionFailRequestDto } from "@server/lib/executions/execution-fail.dto";
+import {
+  leaseDuration,
+  pullInterval,
+} from "@server/lib/executions/execution-lease";
 import type { ExecutionMessageCreateRequestDto } from "@server/lib/executions/execution-message-create.dto";
 import type { ExecutionPullRequestDto } from "@server/lib/executions/execution-pull.dto";
 import type { ExecutionOutcome } from "@server/lib/executions/execution.dto";
@@ -8,7 +12,7 @@ import type { HarnessName } from "@server/lib/executions/harness.dto";
 import { agentPath, runnerPath } from "@server/lib/executions/runner-path";
 import type { TaskSessionUpdateRequestDto } from "@server/lib/tasks/task-session.dto";
 import { $ } from "bun";
-import { hc, parseResponse } from "hono/client";
+import { DetailedError, hc, parseResponse } from "hono/client";
 import { v7 as uuidv7 } from "uuid";
 
 export async function claim(
@@ -46,7 +50,12 @@ export function executionClient(serverUrl: string, token: string) {
   }
 
   const pull = async (request: ExecutionPullRequestDto) =>
-    await settle(parseResponse(api.runner.pull.$post({ json: request })));
+    await settle(
+      whileLeaseHolds(
+        async () =>
+          await parseResponse(api.runner.pull.$post({ json: request }))
+      )
+    );
 
   const turnEnd = async (request: ExecutionPullRequestDto) =>
     await settle(
@@ -69,6 +78,25 @@ export function executionClient(serverUrl: string, token: string) {
       return outcome;
     },
   };
+}
+
+async function whileLeaseHolds<Answer>(pull: () => Promise<Answer>) {
+  const leaseEnd = Date.now() + leaseDuration;
+
+  for (;;) {
+    try {
+      return await pull();
+    } catch (error) {
+      const serverFailed =
+        error instanceof DetailedError && error.statusCode >= 500;
+
+      if (!serverFailed || Date.now() >= leaseEnd) {
+        throw error;
+      }
+
+      await Bun.sleep(pullInterval);
+    }
+  }
 }
 
 export function agentClient(proxyUrl: string) {
